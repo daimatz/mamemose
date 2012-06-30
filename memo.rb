@@ -1,6 +1,33 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
+=begin
+
+Markdown memo server
+====
+
+理想のメモツールを探したがなかったので自分で作った。
+
+  Ruby 1.9.3 でテスト
+
+  RDiscount が必要。
+
+    $ gem install rdiscount
+
+  DOCUMENT_ROOT と PORT を適当に書き換えて、起動してブラウザから
+
+    http://localhost:2000/
+
+  にアクセスすればおｋ
+
+  DOCUMENT_ROOT 以下の Markdown で書かれたテキストを
+  勝手にHTMLに変換して表示します
+  検索も作った
+
+  Windows？ 知らん
+
+=end
+
 DOCUMENT_ROOT = "~/Dropbox/memo"
 PORT = 2000
 
@@ -105,43 +132,6 @@ div > form {
     float: right;
     text-align: right;
 }
-div.navheader table td, div.navfooter table td {
-    padding: 0.5em;
-}
-
-/* "Return to top */
-div.to_top {
-    text-align : right ;                /* for IE 6 */
-    margin-left : auto ;
-    margin-right : 0 ;
-}
-
-div.to_top a, div.navheader a , div.navfooter a {
-    padding: 0.5em;
-    margin: 0.5em;
-    border: 1px solid rgba(0,0,0,0.2);
-    -webkit-border-radius: 0.5em;
-    -moz-border-radius: 0.5em;
-    border-radius: 0.5em;
-    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-    -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-}
-
-/* http://www.hrykozw.com/blog/archives/817 */
-*[accesskey]::after {
-    text-transform: capitalize;
-    content: "[" attr(accesskey) "]";
-    margin-left: 0.5em;
-    padding: 0.5em;
-    color: #000000;
-    background: #ffffff;
-    font-size: 70%;
-    font-weight: bold;
-    font-style: normal;
-    text-decoration: none;
-}
-
 span.filename {
     color: #666666;
 }
