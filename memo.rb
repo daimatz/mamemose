@@ -9,12 +9,15 @@ require 'rdiscount'
 require 'find'
 require 'uri'
 
+CONTENT_TYPE = "text/html; charset=urf-8"
+DIR = File::expand_path(DOCUMENT_ROOT, '/')
+
 def header_html(title, path, q="")
   html = <<HTML
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="text/html" charset="utf-8" />
+<meta http-equiv="Content-Type" content="#{CONTENT_TYPE}" />
 <title>#{title}</title>
 <style type="text/css"><!--
 body {
@@ -179,9 +182,6 @@ def footer_html
 </html>
 HTML
 end
-
-CONTENT_TYPE = "text/html; charset=urf-8"
-DIR = File::expand_path(DOCUMENT_ROOT, '/')
 
 def uri(path)
   s = File::expand_path(path).gsub(DIR, "").gsub(File::SEPARATOR, '/')
