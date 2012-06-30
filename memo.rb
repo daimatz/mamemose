@@ -61,7 +61,6 @@ h1 a, h2 a, h3 a, h4 a, h5 a {
 }
 h1, h2, h3, h4, h5 {
     font-weight: bold;
-    border-bottom: 1px dotted black;
     color: #2f4f4f;
 }
 h1 {
@@ -97,6 +96,8 @@ div.footnotes {
 
 div#header {
     margin-top: 1em;
+    padding-bottom: 1em;
+    border-bottom: 1px dotted black;
 }
 div > form {
     display: float;
