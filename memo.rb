@@ -9,8 +9,6 @@ require 'rdiscount'
 require 'find'
 require 'uri'
 
-CONTENT_TYPE = "text/html; charset=urf-8"
-
 def header_html(title, path, q="")
   html = <<HTML
 <!DOCTYPE HTML>
@@ -182,6 +180,7 @@ def footer_html
 HTML
 end
 
+CONTENT_TYPE = "text/html; charset=urf-8"
 DIR = File::expand_path(DOCUMENT_ROOT, '/')
 
 def uri(path)
@@ -199,12 +198,7 @@ end
 
 def link_list(title, link)
   file = path(link)
-  str = ""
-  if File.file?(file)
-    str = sprintf("%.1f", File.size(file) / 1024.0) + "KB"
-  else
-    str = "dir"
-  end
+  str = File.file?(file) ? sprintf("%.1fKB", File.size(file) / 1024.0) : "dir"
   return "- [#{title}](#{link}) <span class='filename'>#{File.basename(link)} [#{str}]</span>\n"
 end
 
@@ -238,6 +232,7 @@ server.mount_proc('/') do |req, res|
     end
 
     res.body = header_html(title, uri(path), q) + RDiscount.new(body).to_html + footer_html
+    res.content_type = CONTENT_TYPE
 
   else
 
