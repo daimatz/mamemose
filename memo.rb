@@ -185,7 +185,8 @@ end
 DIR = File::expand_path(DOCUMENT_ROOT, '/')
 
 def uri(path)
-  return File::expand_path(path).gsub(DIR, "").gsub(File::SEPARATOR, '/')
+  s = File::expand_path(path).gsub(DIR, "").gsub(File::SEPARATOR, '/')
+  return s == '' ? '/' : s
 end
 
 def path(uri)
@@ -215,20 +216,25 @@ server.mount_proc('/') do |req, res|
     path = path(query["path"])
     q = URI.decode(query["q"]).force_encoding('utf-8')
 
-    found = []
+    found = {}
     Find.find(path) do |file|
       if File::file?(file)
+        dir = File::dirname(file)
         open(file) do |f|
           c = f.read + "\n" + file
-          found << [c.split(/$/)[0], uri(file)] if !q.split(' ').map{|s| /#{s}/m =~ c }.include?(nil)
+          found[dir] = [] if !found[dir]
+          found[dir] << [c.split(/$/)[0], uri(file)] if !q.split(' ').map{|s| /#{s}/mi =~ c }.include?(nil)
         end
       end
     end
 
     title = "search #{q} in #{docpath(query['path'])}".force_encoding('utf-8')
     body = title + "\n====\n"
-    found.each do |v|
-      body += link_list(v[0], v[1])
+    found.sort.each do |key, value|
+      body += "\n#{uri(key)}\n----\n" if value != []
+      value.each do |v|
+        body += link_list(v[0], v[1])
+      end
     end
 
     res.body = header_html(title, uri(path), q) + RDiscount.new(body).to_html + footer_html
