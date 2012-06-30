@@ -174,7 +174,7 @@ end
 def footer_html
   html = <<HTML
 <footer>
-
+<a href="https://gist.github.com/3025885">https://gist.github.com/3025885</a>
 </footer>
 </body>
 </html>
