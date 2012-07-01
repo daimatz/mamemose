@@ -35,7 +35,7 @@ require 'rdiscount'
 require 'find'
 require 'uri'
 
-CONTENT_TYPE = "text/html; charset=urf-8"
+CONTENT_TYPE = "text/html; charset=utf-8"
 DIR = File::expand_path(DOCUMENT_ROOT, '/')
 MARKDOWN_PATTERN = /\.(md|markdown)$/
 
