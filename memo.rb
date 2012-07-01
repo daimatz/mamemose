@@ -196,6 +196,11 @@ def markdown?(file)
   return file =~ MARKDOWN_PATTERN
 end
 
+def get_title(filename, str)
+  title = str.split(/$/)[0]
+  return title =~ /^\s*$/ ? File::basename(filename) : title
+end
+
 server = WEBrick::HTTPServer.new({ :Port => PORT })
 
 server.mount_proc('/') do |req, res|
@@ -211,7 +216,7 @@ server.mount_proc('/') do |req, res|
         open(file) do |f|
           c = f.read + "\n" + file
           found[dir] = [] if !found[dir]
-          found[dir] << [c.split(/$/)[0], uri(file)] if !q.split(' ').map{|s| /#{s}/mi =~ c }.include?(nil)
+          found[dir] << [get_title(file,c), uri(file)] if !q.split(' ').map{|s| /#{s}/mi =~ c }.include?(nil)
         end
       end
     end
@@ -247,7 +252,7 @@ server.mount_proc('/') do |req, res|
           dirs << [File.basename(link) + File::SEPARATOR, link]
         elsif markdown?(link)
           File.open(path(link)) do |f|
-            markdowns << [f.read.split(/$/)[0], link]
+            markdowns << [get_title(link, f.read), link]
           end
         else
           files << [File::basename(link), link]
@@ -270,7 +275,7 @@ server.mount_proc('/') do |req, res|
       open(filename) do |file|
         if markdown?(req.path)
           str = file.read
-          title = str.split(/$/)[0]
+          title = get_title(filename, str)
           res.body = header_html(title, req.path) + RDiscount.new(str).to_html + footer_html
           res.content_type = CONTENT_TYPE
         else
