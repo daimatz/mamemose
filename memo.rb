@@ -151,7 +151,7 @@ HTML
     uri += "/" + s
     link_str += File::SEPARATOR + "<a href='#{uri}'>#{s}</a>"
   end
-  uri.gsub!(/\/[^\/]+?\.md$/, "")
+  uri.gsub!(/\/[^\/]+?\.(md|markdown)$/, "")
   link_str = "<a href='/'>#{DOCUMENT_ROOT}</a>" + link_str
   search_form = <<HTML
 <form action="/search" method="get">
@@ -259,7 +259,7 @@ server.mount_proc('/') do |req, res|
 
     elsif File.exists?(filename)
       open(filename) do |file|
-        if req.path =~ /\.md$/ or req.path =~ /\.markdown$/ then
+        if req.path =~ /\.(md|markdown)$/
           str = file.read
           title = str.split(/$/)[0]
           res.body = header_html(title, req.path) + RDiscount.new(str).to_html + footer_html
