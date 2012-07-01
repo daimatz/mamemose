@@ -37,6 +37,7 @@ require 'uri'
 
 CONTENT_TYPE = "text/html; charset=urf-8"
 DIR = File::expand_path(DOCUMENT_ROOT, '/')
+MARKDOWN_PATTERN = /\.(md|markdown)$/
 
 def header_html(title, path, q="")
   html = <<HTML
@@ -150,7 +151,7 @@ HTML
     uri += "/" + s
     link_str += File::SEPARATOR + "<a href='#{uri}'>#{s}</a>"
   end
-  uri.gsub!(/\/[^\/]+?\.(md|markdown)$/, "")
+  uri.gsub!(File::basename(uri), "")
   link_str = "<a href='/'>#{DOCUMENT_ROOT}</a>" + link_str
   search_form = <<HTML
 <form action="/search" method="get">
@@ -191,6 +192,10 @@ def link_list(title, link)
   return "- [#{title}](#{link}) <span class='filename'>#{File.basename(link)} [#{str}]</span>\n"
 end
 
+def markdown?(file)
+  return file =~ MARKDOWN_PATTERN
+end
+
 server = WEBrick::HTTPServer.new({ :Port => PORT })
 
 server.mount_proc('/') do |req, res|
@@ -201,7 +206,7 @@ server.mount_proc('/') do |req, res|
 
     found = {}
     Find.find(path) do |file|
-      if File::file?(file)
+      if markdown?(file)
         dir = File::dirname(file)
         open(file) do |f|
           c = f.read + "\n" + file
@@ -240,7 +245,7 @@ server.mount_proc('/') do |req, res|
         link = uri(File.join(filename, i))
         if File.directory?(path(link)) then
           dirs << [File.basename(link) + File::SEPARATOR, link]
-        elsif link =~ /\.(md|markdown)$/
+        elsif markdown?(link)
           File.open(path(link)) do |f|
             markdowns << [f.read.split(/$/)[0], link]
           end
@@ -263,7 +268,7 @@ server.mount_proc('/') do |req, res|
 
     elsif File.exists?(filename)
       open(filename) do |file|
-        if req.path =~ /\.(md|markdown)$/
+        if markdown?(req.path)
           str = file.read
           title = str.split(/$/)[0]
           res.body = header_html(title, req.path) + RDiscount.new(str).to_html + footer_html
