@@ -4,9 +4,8 @@
 =begin
 
 Markdown memo server
-====
 
-理想のメモツールを探したがなかったので自分で作った。
+理想の Markdown メモツールを探したがなかったので自分で作った。
 
   Ruby 1.9.3 でテスト
 
@@ -16,7 +15,7 @@ Markdown memo server
 
   DOCUMENT_ROOT と PORT を適当に書き換えて、起動してブラウザから
 
-    http://localhost:2000/
+    http://localhost:PORT/
 
   にアクセスすればおｋ
 
@@ -29,7 +28,7 @@ Markdown memo server
 =end
 
 DOCUMENT_ROOT = "~/Dropbox/memo"
-PORT = 2000
+PORT = 20000
 
 require 'webrick'
 require 'rdiscount'
@@ -127,7 +126,7 @@ div#header {
     padding-bottom: 1em;
     border-bottom: 1px dotted black;
 }
-div > form {
+div#header > form {
     display: float;
     float: right;
     text-align: right;
@@ -212,7 +211,7 @@ server.mount_proc('/') do |req, res|
       end
     end
 
-    title = "search #{q} in #{docpath(query['path'])}".force_encoding('utf-8')
+    title = "Search #{q} in #{docpath(query['path'])}".force_encoding('utf-8')
     body = title + "\n====\n"
     found.sort.each do |key, value|
       body += "\n#{uri(key)}\n----\n" if value != []
@@ -229,29 +228,34 @@ server.mount_proc('/') do |req, res|
     filename = path(req.path)
 
     if File.directory?(filename) then
-      title = "index of #{docpath(req.path)}"
+      title = "Index of #{docpath(req.path)}"
       body = title + "\n====\n"
 
       dirs = []
+      markdowns = []
       files = []
 
       Dir.entries(filename).each do |i|
         next if i =~ /^\.+$/
         link = uri(File.join(filename, i))
-        ftitle = ""
         if File.directory?(path(link)) then
           dirs << [File.basename(link) + File::SEPARATOR, link]
-        else
+        elsif link =~ /\.(md|markdown)$/
           File.open(path(link)) do |f|
-            files << [ftitle = f.read.split(/$/)[0], link]
+            markdowns << [f.read.split(/$/)[0], link]
           end
+        else
+          files << [File::basename(link), link]
         end
       end
 
-      body += "\ndirectories:\n----\n"
+      body += "\nDirectories:\n----\n"
       dirs.each {|i| body += link_list(i[0], i[1])}
 
-      body += "\nfiles:\n----\n"
+      body += "\nMarkdown documents:\n----\n"
+      markdowns.each {|i| body += link_list(i[0], i[1])}
+
+      body += "\nOther files:\n----\n"
       files.each {|i| body += link_list(i[0], i[1])}
 
       res.body = header_html(title, req.path) + RDiscount.new(body).to_html + footer_html
