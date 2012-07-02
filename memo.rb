@@ -49,8 +49,7 @@ def header_html(title, path, q="")
 <style type="text/css"><!--
 body {
     margin: auto;
-    padding-right: 1em;
-    padding-left: 1em;
+    padding: 0 2em;
     max-width: 80%;
     border-left: 1px solid black;
     border-right: 1px solid black;
@@ -87,41 +86,41 @@ h1 a, h2 a, h3 a, h4 a, h5 a {
     text-decoration: none;
     color: #2f4f4f;
 }
-h1, h2, h3, h4, h5 {
+h1, h2, h3 {
     font-weight: bold;
     color: #2f4f4f;
 }
 h1 {
-    font-size: 150%;
-    margin-top: 2em;
-}
-h2 { font-size: 130% }
-h3 { font-size: 120% }
-h4 {
-    font-size: 110%;
-    font-style: italic;
-}
-h5 {
-    font-size: 100%;
-    font-style: italic;
-}
-h1.title {
-    margin-top: 1ex;
-    line-height: 1.2em;
     font-size: 200%;
-    font-weight: bold;
-    padding-top: 0.2em;
-    padding-bottom: 0.2em;
-    text-align: left;
-    border: none;
+    line-height: 100%;
+    margin-top: 1em;
+    border-bottom: 1px solid #2f4f4f;
 }
-dt code { font-weight: bold }
-dd p { margin-top: 0 }
+h2 {
+    font-size: 175%;
+    line-height: 100%;
+    margin-top: 1em;
+    padding-left: 0.5em;
+    border-left: 0.5em solid #2f4f4f;
+}
+h3 {
+    font-size: 150%;
+    line-height: 100%;
+    margin-top: 0.5em;
+}
+h4, h5 {
+    font-weight: bold;
+    color: #000000;
+}
+h4 { font-size: 125% }
+h5 { font-size: 100% }
+p {
+    margin: 0 1em;
+}
 div.footnotes {
     padding-top: 1em;
     color: #090909;
 }
-
 div#header {
     margin-top: 1em;
     padding-bottom: 1em;
@@ -139,6 +138,7 @@ footer {
     border-top: 1px dotted black;
     padding: 0.5em;
     text-align: right;
+    margin: 5em 0 1em;
 }
 --></style>
 </head>
