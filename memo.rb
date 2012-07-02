@@ -106,7 +106,7 @@ h2 {
 h3 {
     font-size: 150%;
     line-height: 100%;
-    margin-top: 0.5em;
+    margin-top: 1em;
 }
 h4, h5 {
     font-weight: bold;
