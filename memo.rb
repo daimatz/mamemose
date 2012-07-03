@@ -111,11 +111,13 @@ h3 {
 h4, h5 {
     font-weight: bold;
     color: #000000;
+    margin: 1em 0 0.5em;
 }
 h4 { font-size: 125% }
 h5 { font-size: 100% }
 p {
-    margin: 0 1em;
+    margin: 0.7em 1em;
+    text-indent: 1em;
 }
 div.footnotes {
     padding-top: 1em;
