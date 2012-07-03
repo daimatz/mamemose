@@ -60,6 +60,7 @@ pre {
     border: 1px dotted #090909;
     background-color: #ececec;
     padding: 0.5em;
+    margin: 0.5em 1em;
 }
 code {
     border: 1px dotted #090909;
@@ -93,20 +94,20 @@ h1, h2, h3 {
 h1 {
     font-size: 200%;
     line-height: 100%;
-    margin-top: 1em;
+    margin: 1em 0;
     border-bottom: 1px solid #2f4f4f;
 }
 h2 {
     font-size: 175%;
     line-height: 100%;
-    margin-top: 1em;
+    margin: 1em 0;
     padding-left: 0.5em;
     border-left: 0.5em solid #2f4f4f;
 }
 h3 {
     font-size: 150%;
     line-height: 100%;
-    margin-top: 1em;
+    margin: 1em 0;
 }
 h4, h5 {
     font-weight: bold;
