@@ -199,7 +199,8 @@ def markdown?(file)
   return file =~ MARKDOWN_PATTERN
 end
 
-def get_title(filename, str)
+def get_title(filename, str="")
+  return File::basename(filename) if !markdown?(filename)
   title = str.split(/$/)[0]
   return title =~ /^\s*$/ ? File::basename(filename) : title
 end
@@ -214,13 +215,15 @@ server.mount_proc('/') do |req, res|
 
     found = {}
     Find.find(path) do |file|
+      dir = File::dirname(file)
+      found[dir] = [] if !found[dir]
       if markdown?(file)
-        dir = File::dirname(file)
         open(file) do |f|
           c = f.read + "\n" + file
-          found[dir] = [] if !found[dir]
           found[dir] << [get_title(file,c), uri(file)] if !q.split(' ').map{|s| /#{s}/mi =~ c }.include?(nil)
         end
+      elsif !q.split(' ').map{|s| /#{s}/ =~ File.basename(file)}.include?(nil)
+        found[dir] << [get_title(file),uri(file)]
       end
     end
 
