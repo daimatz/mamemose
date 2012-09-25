@@ -38,6 +38,9 @@ require 'uri'
 CONTENT_TYPE = "text/html; charset=utf-8"
 DIR = File::expand_path(DOCUMENT_ROOT, '/')
 MARKDOWN_PATTERN = /\.(md|markdown)$/
+IGNORE_FILES = ['.DS_Store','.AppleDouble','.LSOverride','Icon',/^\./,/~$/,
+                '.Spotlight-V100','.Trashes','Thumbs.db','ehthumbs.db',
+                'Desktop.ini','$RECYCLE.BIN',/^#/]
 
 def header_html(title, path, q="")
   html = <<HTML
@@ -199,6 +202,15 @@ def markdown?(file)
   return file =~ MARKDOWN_PATTERN
 end
 
+def ignore?(file)
+  file = File::basename(file)
+  IGNORE_FILES.each do |s|
+    return true if s.class == String && s == file
+    return true if s.class == Regexp && s =~ file
+  end
+  return false
+end
+
 def get_title(filename, str="")
   return File::basename(filename) if !markdown?(filename)
   title = str.split(/$/)[0]
@@ -215,6 +227,7 @@ server.mount_proc('/') do |req, res|
 
     found = {}
     Find.find(path) do |file|
+      next if ignore?(file)
       dir = File::dirname(file)
       found[dir] = [] if !found[dir]
       if markdown?(file)
@@ -252,7 +265,7 @@ server.mount_proc('/') do |req, res|
       files = []
 
       Dir.entries(filename).each do |i|
-        next if i =~ /^\.+$/
+        next if ignore?(i)
         link = uri(File.join(filename, i))
         if File.directory?(path(link)) then
           dirs << [File.basename(link) + File::SEPARATOR, link]
