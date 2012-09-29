@@ -37,7 +37,7 @@ require 'uri'
 
 CONTENT_TYPE = "text/html; charset=utf-8"
 DIR = File::expand_path(DOCUMENT_ROOT, '/')
-MARKDOWN_PATTERN = /\.(md|markdown)$/
+MARKDOWN_PATTERN = /\.(md|markdown|txt)$/
 IGNORE_FILES = ['.DS_Store','.AppleDouble','.LSOverride','Icon',/^\./,/~$/,
                 '.Spotlight-V100','.Trashes','Thumbs.db','ehthumbs.db',
                 'Desktop.ini','$RECYCLE.BIN',/^#/]
