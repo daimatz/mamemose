@@ -13,7 +13,11 @@ Markdown memo server
 
     $ gem install rdiscount
 
-  DOCUMENT_ROOT と PORT を適当に書き換えて、起動してブラウザから
+  DOCUMENT_ROOT と PORT を適当に書き換えて、起動
+
+    $ nohup ruby memo.rb &
+
+  ブラウザから
 
     http://localhost:PORT/
 
@@ -21,7 +25,12 @@ Markdown memo server
 
   DOCUMENT_ROOT 以下の Markdown で書かれたテキストを
   勝手にHTMLに変換して表示します
-  検索も作った
+
+  一覧ページでは Markdown ドキュメントの1行目をタイトルとして読み込みます。
+
+  検索も作った。
+  Markdown ドキュメントを全文検索して一致したものを表示します。
+  Markdown ドキュメントでないものはファイル名に一致したを表示します。
 
   Windows？ 知らん
 
