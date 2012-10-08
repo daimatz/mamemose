@@ -49,7 +49,7 @@ DIR = File::expand_path(DOCUMENT_ROOT, '/')
 MARKDOWN_PATTERN = /\.(md|markdown|txt)$/
 IGNORE_FILES = ['.DS_Store','.AppleDouble','.LSOverride','Icon',/^\./,/~$/,
                 '.Spotlight-V100','.Trashes','Thumbs.db','ehthumbs.db',
-                'Desktop.ini','$RECYCLE.BIN',/^#/]
+                'Desktop.ini','$RECYCLE.BIN',/^#/,'MathJax']
 
 def header_html(title, path, q="")
   html = <<HTML
@@ -236,7 +236,7 @@ server.mount_proc('/') do |req, res|
 
     found = {}
     Find.find(path) do |file|
-      next if ignore?(file)
+      Find.prune if ignore?(file)
       dir = File::dirname(file)
       found[dir] = [] if !found[dir]
       if markdown?(file)
