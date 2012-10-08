@@ -232,7 +232,8 @@ server.mount_proc('/') do |req, res|
   if req.path =~ /^\/search/
     query = req.query
     path = path(query["path"])
-    q = URI.decode(query["q"]).force_encoding('utf-8')
+    q = URI.decode(query["q"])
+    q = q.force_encoding('utf-8') if q.respond_to?(:force_encoding)
 
     found = {}
     Find.find(path) do |file|
@@ -249,10 +250,11 @@ server.mount_proc('/') do |req, res|
       end
     end
 
-    title = "Search #{q} in #{docpath(query['path'])}".force_encoding('utf-8')
+    title = "Search #{q} in #{docpath(query['path'])}"
+    title = title.force_encoding('utf-8') if title.respond_to?(:force_encoding)
     body = title + "\n====\n"
-    found.sort.each do |key, value|
-      body += "\n#{uri(key)}\n----\n" if value != []
+    found.reject{|key, value| value == []}.sort.each do |key, value|
+      body += "\n#{uri(key)}\n----\n"
       value.each do |v|
         body += link_list(v[0], v[1])
       end
