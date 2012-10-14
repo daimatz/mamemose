@@ -39,6 +39,7 @@ Markdown memo server
 
 DOCUMENT_ROOT = "~/Dropbox/memo"
 PORT = 20000
+RECENT_NUMS = 10
 
 require 'webrick'
 require 'rdiscount'
@@ -268,9 +269,23 @@ server.mount_proc('/') do |req, res|
       title = "Index of #{docpath(req.path)}"
       body = title + "\n====\n"
 
+      recent = []
       dirs = []
       markdowns = []
       files = []
+
+      Find.find(filename) do |file|
+        Find.prune if ignore?(file)
+        recent << file if File.file?(file)
+      end
+      recent = recent.sort_by{|file| File.mtime(file)}.reverse.slice(0,RECENT_NUMS)
+      recent = recent.map{|file|
+        if markdown?(file) then
+          [get_title(file, open(file).read), uri(file)]
+        else [File::basename(file), uri(file)]
+        end
+      }
+      p recent
 
       Dir.entries(filename).each do |i|
         next if ignore?(i)
@@ -285,6 +300,9 @@ server.mount_proc('/') do |req, res|
           files << [File::basename(link), link]
         end
       end
+
+      body += "\nRecent:\n---\n"
+      recent.each {|i| body += link_list(i[0], i[1])}
 
       body += "\nDirectories:\n----\n"
       dirs.each {|i| body += link_list(i[0], i[1])}
