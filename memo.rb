@@ -96,10 +96,6 @@ a:link, a:visited, a:hover {
 a:hover {
     text-decoration: underline;
 }
-h1 a, h2 a, h3 a, h4 a, h5 a {
-    text-decoration: none;
-    color: #2f4f4f;
-}
 h1, h2, h3 {
     font-weight: bold;
     color: #2f4f4f;
@@ -255,7 +251,7 @@ server.mount_proc('/') do |req, res|
     title = title.force_encoding('utf-8') if title.respond_to?(:force_encoding)
     body = title + "\n====\n"
     found.reject{|key, value| value == []}.sort.each do |key, value|
-      body += "\n#{uri(key)}\n----\n"
+      body += "\n### in <a href='#{uri(key)}'>#{uri(key)}\n"
       value.each do |v|
         body += link_list(v[0], v[1])
       end
