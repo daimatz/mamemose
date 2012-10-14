@@ -285,7 +285,6 @@ server.mount_proc('/') do |req, res|
         else [File::basename(file), uri(file)]
         end
       }
-      p recent
 
       Dir.entries(filename).each do |i|
         next if ignore?(i)
