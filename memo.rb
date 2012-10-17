@@ -144,7 +144,7 @@ div#header > form {
     float: right;
     text-align: right;
 }
-span.filename {
+a.filename {
     color: #666666;
 }
 footer {
@@ -154,6 +154,32 @@ footer {
     margin: 5em 0 1em;
 }
 --></style>
+<script>
+function copy(text) {
+  var input, success;
+  if ("console" in window && "notifyFirebug" in console) {
+    console.notifyFirebug([text], "copy", "firebugExecuteCommand");
+    success = true;
+  } else {
+    input = document.createElement("input");
+    input.style.position = "absolute";
+    input.style.top = "-100px";
+    input.value = text;
+    input.hidden = true;
+    document.body.appendChild(input);
+    input.select();
+    try {
+      success = document.execCommand("copy", false, null);
+    } catch (ex) {
+      success = false;
+    } finally {
+      document.body.removeChild(input);
+    }
+  }
+  if (success) alert("Copied filepath.");
+  else prompt("Copy filepath below:", text);
+}
+</script>
 </head>
 <body>
 HTML
@@ -202,7 +228,7 @@ end
 def link_list(title, link)
   file = path(link)
   str = File.file?(file) ? sprintf("%.1fKB", File.size(file) / 1024.0) : "dir"
-  return "- [#{title}](#{link}) <span class='filename'>#{File.basename(link)} [#{str}]</span>\n"
+  return "- [#{title}](#{link}) <a class='filename' href=\"javascript:copy('#{DOCUMENT_ROOT+link}');return false;\">[#{File.basename(link)}, #{str}]</a>\n"
 end
 
 def markdown?(file)
