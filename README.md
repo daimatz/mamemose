@@ -12,6 +12,7 @@ Markdown memo server
 - 複数マシンで内容を共有できる (Dropbox 等を使ってもよい)
 - 使い慣れたエディタを使える
 - 検索できる
+- できれば GitHub Flavored Markdown でシンタックスハイライトもしてほしい
 
 環境
 ----
@@ -23,9 +24,18 @@ Markdown memo server
 
 ### ライブラリ等
 
-RDiscount が必要。
+Rubygems の Redcarpet 1.17.2, Albino, Nokogiri と、
+Python の Pygments が必要。
 
-    $ gem install rdiscount
+    $ gem install redcarpet --version=1.17.2
+    $ gem install albino nokogiri
+    $ sudo easy_install pygments
+
+この後、
+
+    $ which pygments
+
+できちんと見つかることを確認
 
 設定
 ----
@@ -96,7 +106,24 @@ RDiscount が必要。
 一覧ページでは Markdown ドキュメントの1行目をタイトルとして読み込みます。
 
 `DOCUMENT_ROOT` を Dropbox 以下のディレクトリに指定しておけば、どのマシンからでも
-メモにアクセスできる
+メモにアクセスできるようになります。
+
+GitHub Flavored Markdown が使えます。
+シンタックスハイライトもしてくれます。
+
+カラーリングが気に入らない場合は
+`Pygments CSS` とかでググって好きな CSS を拾ってくるか、
+
+    $ pygmentize -S default -f html > syntax.css
+
+として CSS ファイルを生成してください。
+CSS ファイルを `DOCUMENT_ROOT` 直下に置いて、 `conf.rb` 内で
+
+    CUSTOM_HEADER = <<HEADER
+    <link rel="stylesheet" type="text/css" href="/syntax.css" media="screen" />
+    HEADER
+
+とでもすれば上書きされるはずです。
 
 検索
 ----

@@ -18,9 +18,11 @@ CUSTOM_FOOTER = '' if !defined?(CUSTOM_FOOTER)
 
 require 'rubygems'
 require 'webrick'
-require 'rdiscount'
 require 'find'
 require 'uri'
+require 'redcarpet'
+require 'albino'
+require 'nokogiri'
 
 CONTENT_TYPE = "text/html; charset=utf-8"
 DIR = File::expand_path(DOCUMENT_ROOT, '/')
@@ -44,7 +46,7 @@ body {
 }
 pre {
     border: 1px dotted #090909;
-    background-color: #ececec;
+    background-color: #f8f8f8;
     padding: 0.5em;
     margin: 0.5em 1em;
 }
@@ -125,6 +127,66 @@ footer {
     text-align: right;
     margin: 5em 0 1em;
 }
+.hll { background-color: #ffffcc }
+.c { color: #888888; font-style: italic } /* Comment */
+.err { color: #a61717; background-color: #e3d2d2 } /* Error */
+.k { color: #880088; font-weight: bold } /* Keyword */
+.cm { color: #888888; font-style: italic } /* Comment.Multiline */
+.cp { color: #cc0000; font-weight: bold } /* Comment.Preproc */
+.c1 { color: #888888; font-style: italic } /* Comment.Single */
+.cs { color: #cc0000; font-weight: bold; background-color: #fff0f0 } /* Comment.Special */
+.gd { color: #000000; background-color: #ffdddd } /* Generic.Deleted */
+.ge { font-style: italic } /* Generic.Emph */
+.gr { color: #aa0000 } /* Generic.Error */
+.gh { color: #303030 } /* Generic.Heading */
+.gi { color: #000000; background-color: #ddffdd } /* Generic.Inserted */
+.go { color: #888888 } /* Generic.Output */
+.gp { color: #555555 } /* Generic.Prompt */
+.gs { font-weight: bold } /* Generic.Strong */
+.gu { color: #606060 } /* Generic.Subheading */
+.gt { color: #aa0000 } /* Generic.Traceback */
+.kc { color: #880088; font-weight: bold } /* Keyword.Constant */
+.kd { color: #880088; font-weight: bold } /* Keyword.Declaration */
+.kn { color: #880088; font-weight: bold } /* Keyword.Namespace */
+.kp { color: #880088 } /* Keyword.Pseudo */
+.kr { color: #880088; font-weight: bold } /* Keyword.Reserved */
+.kt { color: #008800; font-weight: bold } /* Keyword.Type */
+.m { color: #000000 } /* Literal.Number */
+.s { color: #dd2200 } /* Literal.String */
+.na { color: #336699 } /* Name.Attribute */
+.nb { color: #003388 } /* Name.Builtin */
+.nc { color: #bb0066; font-weight: bold } /* Name.Class */
+.no { color: #003366; font-weight: bold } /* Name.Constant */
+.nd { color: #555555 } /* Name.Decorator */
+.ne { color: #bb0066; font-weight: bold } /* Name.Exception */
+.nf { color: #0066bb; font-weight: bold } /* Name.Function */
+.nl { color: #336699; font-style: italic } /* Name.Label */
+.nn { color: #000000; font-weight: bold } /* Name.Namespace */
+.py { color: #336699; font-weight: bold } /* Name.Property */
+.nt { color: #bb0066; font-weight: bold } /* Name.Tag */
+.nv { color: #336699 } /* Name.Variable */
+.ow { color: #888800; font-weight: bold } /* Operator.Word */
+.w { color: #bbbbbb } /* Text.Whitespace */
+.mf { color: #000000 } /* Literal.Number.Float */
+.mh { color: #000000 } /* Literal.Number.Hex */
+.mi { color: #000000 } /* Literal.Number.Integer */
+.mo { color: #000000 } /* Literal.Number.Oct */
+.sb { color: #dd2200 } /* Literal.String.Backtick */
+.sc { color: #dd2200 } /* Literal.String.Char */
+.sd { color: #dd2200 } /* Literal.String.Doc */
+.s2 { color: #dd2200 } /* Literal.String.Double */
+.se { color: #0044dd } /* Literal.String.Escape */
+.sh { color: #dd2200 } /* Literal.String.Heredoc */
+.si { color: #3333bb } /* Literal.String.Interpol */
+.sx { color: #22bb22 } /* Literal.String.Other */
+.sr { color: #008800 } /* Literal.String.Regex */
+.s1 { color: #dd2200 } /* Literal.String.Single */
+.ss { color: #aa6600 } /* Literal.String.Symbol */
+.bp { color: #003388 } /* Name.Builtin.Pseudo */
+.vc { color: #336699 } /* Name.Variable.Class */
+.vg { color: #dd7700 } /* Name.Variable.Global */
+.vi { color: #3333bb } /* Name.Variable.Instance */
+.il { color: #000000 } /* Literal.Number.Integer.Long */
 --></style>
 <script>
 function copy(text) {
@@ -226,6 +288,20 @@ def get_title(filename, str="")
   return title =~ /^\s*$/ ? File::basename(filename) : title
 end
 
+def markdown(text)
+  options = [:hard_wrap, :filter_html, :autolink, :no_intraemphasis, :fenced_code, :gh_blockcode]
+  html = Redcarpet.new(text, *options).to_html
+  syntax_highlighter(html)
+end
+
+def syntax_highlighter(html)
+  doc = Nokogiri::HTML(html)
+  doc.search("//pre[@lang]").each do |pre|
+    pre.replace Albino.colorize(pre.text.rstrip, pre[:lang])
+  end
+  doc.at_css("body").inner_html.to_s
+end
+
 server = WEBrick::HTTPServer.new({ :Port => PORT })
 
 server.mount_proc('/') do |req, res|
@@ -260,7 +336,7 @@ server.mount_proc('/') do |req, res|
       end
     end
 
-    res.body = header_html(title, uri(path), q) + RDiscount.new(body).to_html + footer_html
+    res.body = header_html(title, uri(path), q) + markdown(body) + footer_html
     res.content_type = CONTENT_TYPE
 
   else
@@ -318,7 +394,7 @@ server.mount_proc('/') do |req, res|
       body += "\nOther files:\n----\n"
       files.each {|i| body += link_list(i[0], i[1])}
 
-      res.body = header_html(title, req.path) + RDiscount.new(body).to_html + footer_html
+      res.body = header_html(title, req.path) + markdown(body) + footer_html
       res.content_type = CONTENT_TYPE
 
     elsif File.exists?(filename)
@@ -326,7 +402,7 @@ server.mount_proc('/') do |req, res|
         if markdown?(req.path)
           str = file.read
           title = get_title(filename, str)
-          res.body = header_html(title, req.path) + RDiscount.new(str).to_html + footer_html
+          res.body = header_html(title, req.path) + markdown(str) + footer_html
           res.content_type = CONTENT_TYPE
         else
           res.body = file.read
