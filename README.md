@@ -43,6 +43,9 @@ RDiscount が必要。
 
     PORT = 8888
 
+    # 最近使ったファイル一覧がジャマ
+    RECENT_NUMS = 0
+
     # 通常の Markdown ファイルに加えて .txt ファイルも Markdown と見なす
     MARKDOWN_PATTERN = /\.(md|markdown|txt)$/
 
