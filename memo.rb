@@ -16,6 +16,7 @@ CUSTOM_HEADER = '' if !defined?(CUSTOM_HEADER)
 CUSTOM_BODY = '' if !defined?(CUSTOM_BODY)
 CUSTOM_FOOTER = '' if !defined?(CUSTOM_FOOTER)
 
+require 'rubygems'
 require 'webrick'
 require 'rdiscount'
 require 'find'
