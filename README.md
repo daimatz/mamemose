@@ -24,6 +24,8 @@ Markdown memo server
 
 ### ライブラリ等
 
+#### GitHub Flavored Markdown を使う場合
+
 Rubygems の Redcarpet 1.17.2, Albino, Nokogiri と、
 Python の Pygments が必要。
 
@@ -36,6 +38,33 @@ Python の Pygments が必要。
     $ which pygments
 
 できちんと見つかることを確認
+
+こっちでは GitHub Flavored Markdown が使えます。シンタックスハイライトもしてくれます。
+カラーリングが気に入らない場合は
+`Pygments CSS` とかでググって好きな CSS を拾ってくるか、
+
+    $ pygmentize -S default -f html > syntax.css
+
+として CSS ファイルを生成してください。
+CSS ファイルを `DOCUMENT_ROOT` 直下に置いて、 `conf.rb` 内で
+
+    CUSTOM_HEADER = <<HEADER
+    <link rel="stylesheet" type="text/css" href="/syntax.css" media="screen" />
+    HEADER
+
+とでもすれば上書きされるはずです。
+
+#### RDiscount を使う場合
+
+GitHub Flavored じゃなくていい場合こっちのほうが楽。
+
+pure というブランチがこれなので、
+
+    $ git checkout pure
+
+する。あとRDiscount が必要
+
+    $ gem install rdiscount
 
 設定
 ----
@@ -107,23 +136,6 @@ Python の Pygments が必要。
 
 `DOCUMENT_ROOT` を Dropbox 以下のディレクトリに指定しておけば、どのマシンからでも
 メモにアクセスできるようになります。
-
-GitHub Flavored Markdown が使えます。
-シンタックスハイライトもしてくれます。
-
-カラーリングが気に入らない場合は
-`Pygments CSS` とかでググって好きな CSS を拾ってくるか、
-
-    $ pygmentize -S default -f html > syntax.css
-
-として CSS ファイルを生成してください。
-CSS ファイルを `DOCUMENT_ROOT` 直下に置いて、 `conf.rb` 内で
-
-    CUSTOM_HEADER = <<HEADER
-    <link rel="stylesheet" type="text/css" href="/syntax.css" media="screen" />
-    HEADER
-
-とでもすれば上書きされるはずです。
 
 検索
 ----
