@@ -69,6 +69,9 @@ RDiscount が必要。
 `DOCUMENT_ROOT` 以下の Markdown で書かれたテキストを勝手にHTMLに変換して表示します。
 一覧ページでは Markdown ドキュメントの1行目をタイトルとして読み込みます。
 
+`DOCUMENT_ROOT` を Dropbox 以下のディレクトリに指定しておけば、どのマシンからでも
+メモにアクセスできる
+
 検索
 ----
 
