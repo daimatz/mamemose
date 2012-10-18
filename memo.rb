@@ -16,7 +16,7 @@ Markdown memo server
 
     $ gem install rdiscount
 
-  同じディレクトリに setting.rb という設定ファイルを置くとそれを読みます。
+  同じディレクトリに conf.rb という設定ファイルを置くとそれを読みます。
   DOCUMENT_ROOT, PORT, RECENT_NUMS, IGNORE_FILES, MARKDOWN_PATTERN,
   CUSTOM_HEADER, CUSTOM_BODY, CUSTOM_FOOTER を設定可能
   設定されなかったらデフォルト値を使います。
@@ -42,8 +42,8 @@ Markdown memo server
 
 =end
 
-setting_file = File.dirname(File.expand_path(__FILE__)) + "/setting.rb"
-load setting_file if File.exists?(setting_file)
+conf = File.dirname(File.expand_path(__FILE__)) + "/conf.rb"
+load conf if File.exists?(conf)
 
 DOCUMENT_ROOT = "~/Dropbox/memo" if !defined?(DOCUMENT_ROOT)
 PORT = 20000 if !defined?(PORT)
