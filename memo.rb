@@ -298,7 +298,7 @@ class HTMLwithPygments < Redcarpet::Render::XHTML
         s = Pygments.highlight(code, :lexer => language, :options => {:encoding => 'utf-8', :linenos=>'table'})
         s += '>' if s[s.size-1] != '>' # bug?
         return s
-      rescue e
+      rescue => e
         puts e
       end
     end
