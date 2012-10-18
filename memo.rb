@@ -163,6 +163,7 @@ HTML
     uri += "/" + s
     link_str += File::SEPARATOR + "<a href='#{uri}'>#{s}</a>"
   end
+  link_str +=  " [<a class='filename' href=\"javascript:copy('#{docpath(uri)}');return false;\">copy</a>]"
   uri.gsub!('/'+File::basename(uri), "") if File.file?(path(uri))
   link_str = "<a href='/'>#{DOCUMENT_ROOT}</a>" + link_str
   search_form = <<HTML
@@ -202,7 +203,7 @@ end
 def link_list(title, link)
   file = path(link)
   str = File.file?(file) ? sprintf("%.1fKB", File.size(file) / 1024.0) : "dir"
-  return "- [#{title}](#{link}) <a class='filename' href=\"javascript:copy('#{DOCUMENT_ROOT+link}');return false;\">[#{File.basename(link)}, #{str}]</a>\n"
+  return "- [#{title}](#{link}) <a class='filename' href=\"javascript:copy('#{docpath(link)}');return false;\">[#{File.basename(link)}, #{str}]</a>\n"
 end
 
 def markdown?(file)
