@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
-conf = File.dirname(File.expand_path(__FILE__)) + "/conf.rb"
+conf = File.dirname(File.expand_path(__FILE__)) + File::SEPARATOR + "conf.rb"
 load conf if File.exists?(conf)
 
 DOCUMENT_ROOT = "~/Dropbox/memo" if !defined?(DOCUMENT_ROOT)
