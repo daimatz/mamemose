@@ -294,13 +294,15 @@ end
 class HTMLwithPygments < Redcarpet::Render::XHTML
   def block_code(code, language)
     if language && !language.empty?
-      s = Pygments.highlight(code, :lexer => language, :options => {:encoding => 'utf-8', :linenos=>'table'})
-      s += '>' if s[s.size-1] != '>' # bug?
-      puts s
-      return s
-    else
-      "<pre><code>#{code}</code></pre>"
+      begin
+        s = Pygments.highlight(code, :lexer => language, :options => {:encoding => 'utf-8', :linenos=>'table'})
+        s += '>' if s[s.size-1] != '>' # bug?
+        return s
+      rescue e
+        puts e
+      end
     end
+    "<pre><code>#{code}</code></pre>"
   end
 end
 
