@@ -43,6 +43,9 @@ RDiscount が必要。
 
     PORT = 8888
 
+    # 通常の Markdown ファイルに加えて .txt ファイルも Markdown と見なす
+    MARKDOWN_PATTERN = /\.(md|markdown|txt)$/
+
     # すべてのページで MathJax が使えるように
     CUSTOM_HEADER = <<HEADER
     <script type="text/javascript"

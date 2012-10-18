@@ -10,7 +10,7 @@ RECENT_NUMS = 10 if !defined?(RECENT_NUMS)
 IGNORE_FILES = ['.DS_Store','.AppleDouble','.LSOverride','Icon',/^\./,/~$/,
                 '.Spotlight-V100','.Trashes','Thumbs.db','ehthumbs.db',
                 'Desktop.ini','$RECYCLE.BIN',/^#/,'MathJax'] if !defined?(IGNORE_FILES)
-MARKDOWN_PATTERN = /\.(md|markdown|txt)$/ if !defined?(MARKDOWN_PATTERN)
+MARKDOWN_PATTERN = /\.(md|markdown)$/ if !defined?(MARKDOWN_PATTERN)
 CUSTOM_HEADER = '' if !defined?(CUSTOM_HEADER)
 CUSTOM_BODY = '' if !defined?(CUSTOM_BODY)
 CUSTOM_FOOTER = '' if !defined?(CUSTOM_FOOTER)
