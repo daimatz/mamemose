@@ -52,7 +52,7 @@ pre {
 }
 code {
     border: 1px dotted #090909;
-    background-color: #ececec;
+    background-color: #f8f8f8;
     padding: 2px 0.5em;
     margin: 0 0.5em;
 }
