@@ -31,8 +31,28 @@ RDiscount が必要。
 ----
 
 同じディレクトリに `conf.rb` という設定ファイルを置くとそれを読みます。
-`DOCUMENT_ROOT`, `PORT`, `RECENT_NUMS`, `IGNORE_FILES`, `MARKDOWN_PATTERN`,
-`CUSTOM_HEADER`, `CUSTOM_BODY`, `CUSTOM_FOOTER` を設定可能。
+設定項目は以下の通り
+
+- `DOCUMENT_ROOT`
+  ドキュメントルート
+- `PORT`
+  ポート。 http://localhost:PORT/ にアクセス
+- `MARKDOWN_PATTERN`
+  Markdown ドキュメントと見なすファイルパターンを正規表現で
+- `IGNORE_FILES`
+  無視するファイル・ディレクトリのリスト。
+  文字列の場合はそのものを、正規表現の場合はそれにマッチするものを無視する
+- `RECENT_NUM`
+  「最近更新したファイル」を表示する数
+- `RECENT_PATTERN`
+  「最近更新したファイル」に表示するファイルパターンを正規表現で
+- `CUSTOM_HEADER`
+  カスタムヘッダ。 `head` タグの最後に入る
+- `CUSTOM_BODY`
+  カスタムボディ。 `body` タグの最初に入る
+- `CUSTOM_FOOTER`
+  カスタムフッタ。 `body` タグの最後に入る
+
 設定されなかったらデフォルト値を使います。
 
 ### 設定ファイル例
@@ -43,11 +63,14 @@ RDiscount が必要。
 
     PORT = 8888
 
-    # 最近使ったファイル一覧がジャマ
-    RECENT_NUMS = 0
-
     # 通常の Markdown ファイルに加えて .txt ファイルも Markdown と見なす
     MARKDOWN_PATTERN = /\.(md|markdown|txt)$/
+
+    # 最近更新したファイル一覧がジャマ
+    RECENT_NUM = 0
+
+    # 最近更新したファイル一覧に出すものを Markdown ドキュメントだけにする
+    # RECENT_PATTERN = MARKDOWN_PATTERN
 
     # すべてのページで MathJax が使えるように
     CUSTOM_HEADER = <<HEADER
