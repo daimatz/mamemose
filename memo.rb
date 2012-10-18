@@ -16,7 +16,12 @@ Markdown memo server
 
     $ gem install rdiscount
 
-  DOCUMENT_ROOT と PORT を適当に書き換えて、起動
+  同じディレクトリに setting.rb という設定ファイルを置くとそれを読みます。
+  DOCUMENT_ROOT, PORT, RECENT_NUMS, IGNORE_FILES, MARKDOWN_PATTERN,
+  CUSTOM_HEADER, CUSTOM_BODY, CUSTOM_FOOTER を設定可能
+  設定されなかったらデフォルト値を使います。
+
+  設定ファイルを書いたら以下で起動
 
     $ nohup ruby memo.rb &
 
@@ -37,9 +42,19 @@ Markdown memo server
 
 =end
 
-DOCUMENT_ROOT = "~/Dropbox/memo"
-PORT = 20000
-RECENT_NUMS = 10
+setting_file = File.dirname(File.expand_path(__FILE__)) + "/setting.rb"
+load setting_file if File.exists?(setting_file)
+
+DOCUMENT_ROOT = "~/Dropbox/memo" if !defined?(DOCUMENT_ROOT)
+PORT = 20000 if !defined?(PORT)
+RECENT_NUMS = 10 if !defined?(RECENT_NUMS)
+IGNORE_FILES = ['.DS_Store','.AppleDouble','.LSOverride','Icon',/^\./,/~$/,
+                '.Spotlight-V100','.Trashes','Thumbs.db','ehthumbs.db',
+                'Desktop.ini','$RECYCLE.BIN',/^#/,'MathJax'] if !defined?(IGNORE_FILES)
+MARKDOWN_PATTERN = /\.(md|markdown|txt)$/ if !defined?(MARKDOWN_PATTERN)
+CUSTOM_HEADER = '' if !defined?(CUSTOM_HEADER)
+CUSTOM_BODY = '' if !defined?(CUSTOM_BODY)
+CUSTOM_FOOTER = '' if !defined?(CUSTOM_FOOTER)
 
 require 'webrick'
 require 'rdiscount'
@@ -48,10 +63,6 @@ require 'uri'
 
 CONTENT_TYPE = "text/html; charset=utf-8"
 DIR = File::expand_path(DOCUMENT_ROOT, '/')
-MARKDOWN_PATTERN = /\.(md|markdown|txt)$/
-IGNORE_FILES = ['.DS_Store','.AppleDouble','.LSOverride','Icon',/^\./,/~$/,
-                '.Spotlight-V100','.Trashes','Thumbs.db','ehthumbs.db',
-                'Desktop.ini','$RECYCLE.BIN',/^#/,'MathJax']
 
 def header_html(title, path, q="")
   html = <<HTML
@@ -180,8 +191,10 @@ function copy(text) {
   else prompt("Copy filepath below:", text);
 }
 </script>
+#{CUSTOM_HEADER}
 </head>
 <body>
+#{CUSTOM_BODY}
 HTML
   link_str = ""
   uri = ""
@@ -204,6 +217,7 @@ end
 
 def footer_html
   html = <<HTML
+#{CUSTOM_FOOTER}
 <footer>
 <a href="https://gist.github.com/3025885">https://gist.github.com/3025885</a>
 </footer>
