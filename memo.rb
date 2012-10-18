@@ -21,8 +21,7 @@ require 'webrick'
 require 'find'
 require 'uri'
 require 'redcarpet'
-require 'albino'
-require 'nokogiri'
+require 'pygments.rb'
 
 CONTENT_TYPE = "text/html; charset=utf-8"
 DIR = File::expand_path(DOCUMENT_ROOT, '/')
@@ -45,7 +44,7 @@ body {
     line-height: 140%;
 }
 pre {
-    border: 1px dotted #090909;
+    border: 1px solid #090909;
     background-color: #f8f8f8;
     padding: 0.5em;
     margin: 0.5em 1em;
@@ -127,6 +126,10 @@ footer {
     text-align: right;
     margin: 5em 0 1em;
 }
+.highlighttable { border: 1px solid #888; background-color: #f8f8f8; margin: 0.5em 1em }
+.highlighttable * { padding: 0; margin: 0; background: none; border: none }
+.highlighttable .code { width: 100%; padding: 0.3em 0.5em }
+.highlighttable .linenos { color: #aaa; background-color: #eee; border-right: 1px solid #888; padding: 0.3em 0.3em }
 .hll { background-color: #ffffcc }
 .c { color: #888888; font-style: italic } /* Comment */
 .err { color: #a61717; background-color: #e3d2d2 } /* Error */
@@ -288,18 +291,28 @@ def get_title(filename, str="")
   return title =~ /^\s*$/ ? File::basename(filename) : title
 end
 
-def markdown(text)
-  options = [:hard_wrap, :autolink, :no_intraemphasis, :fenced_code, :gh_blockcode]
-  html = Redcarpet.new(text, *options).to_html
-  syntax_highlighter(html)
+class HTMLwithPygments < Redcarpet::Render::XHTML
+  def block_code(code, language)
+    if language && !language.empty?
+      s = Pygments.highlight(code, :lexer => language, :options => {:encoding => 'utf-8', :linenos=>'table'})
+      s += '>' if s[s.size-1] != '>' # bug?
+      puts s
+      return s
+    else
+      "<pre><code>#{code}</code></pre>"
+    end
+  end
 end
 
-def syntax_highlighter(html)
-  doc = Nokogiri::HTML(html)
-  doc.search("//pre[@lang]").each do |pre|
-    pre.replace Albino.colorize(pre.text.rstrip, pre[:lang])
-  end
-  doc.at_css("body").inner_html.to_s
+def markdown(text)
+  renderer = HTMLwithPygments.new(optionize([]))
+  markdown = Redcarpet::Markdown.new(renderer, optionize([:strikethrough, :autolink, :fenced_code_blocks,]))
+  markdown.render(text)
+end
+
+def optionize(options)
+  #options.each_with_object({}) { |option, memo| memo[option] = true } #1.9 ruby only
+  options.inject({}) {|memo, option| memo[option] = true; memo} #http://stackoverflow.com/questions/5481009/why-is-enumerableeach-with-object-deprecated
 end
 
 server = WEBrick::HTTPServer.new({ :Port => PORT })

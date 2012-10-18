@@ -24,13 +24,14 @@ Markdown memo server
 
 ### ライブラリ等
 
+GitHub Flavored Markdown を使う場合とそうでない場合を作った
+
 #### GitHub Flavored Markdown を使う場合
 
-Rubygems の Redcarpet 1.17.2, Albino, Nokogiri と、
+Rubygems の Redcarpet, pygments.rb と、
 Python の Pygments が必要。
 
-    $ gem install redcarpet --version=1.17.2
-    $ gem install albino nokogiri
+    $ gem install redcarpet pygments.rb
     $ sudo easy_install pygments
 
 この後、
