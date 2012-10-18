@@ -1,47 +1,6 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
-=begin
-
-Markdown memo server
-
-理想の Markdown メモツールを探したがなかったので自分で作った。
-
-  おもに Mac OS X 10.8 上の Ruby 1.9.3 でテスト
-  Ruby 1.8.7 でも動くようにした
-  Linux はおそらく大丈夫
-  Windows も、こないだ Cygwin 上で試したら動いたのでたぶん動くと思う
-
-  RDiscount が必要。
-
-    $ gem install rdiscount
-
-  同じディレクトリに conf.rb という設定ファイルを置くとそれを読みます。
-  DOCUMENT_ROOT, PORT, RECENT_NUMS, IGNORE_FILES, MARKDOWN_PATTERN,
-  CUSTOM_HEADER, CUSTOM_BODY, CUSTOM_FOOTER を設定可能
-  設定されなかったらデフォルト値を使います。
-
-  設定ファイルを書いたら以下で起動
-
-    $ nohup ruby memo.rb &
-
-  ブラウザから
-
-    http://localhost:PORT/
-
-  にアクセスすればおｋ
-
-  DOCUMENT_ROOT 以下の Markdown で書かれたテキストを
-  勝手にHTMLに変換して表示します
-
-  一覧ページでは Markdown ドキュメントの1行目をタイトルとして読み込みます。
-
-  検索も作った。
-  Markdown ドキュメントを全文検索して一致したものを表示します。
-  Markdown ドキュメントでないものはファイル名に一致したを表示します。
-
-=end
-
 conf = File.dirname(File.expand_path(__FILE__)) + "/conf.rb"
 load conf if File.exists?(conf)
 
