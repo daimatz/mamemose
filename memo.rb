@@ -178,7 +178,7 @@ def footer_html
   html = <<HTML
 #{CUSTOM_FOOTER}
 <footer>
-<a href="https://gist.github.com/3025885">https://gist.github.com/3025885</a>
+<a href="https://github.com/daimatz/memo">https://github.com/daimatz/memo</a>
 </footer>
 </body>
 </html>
