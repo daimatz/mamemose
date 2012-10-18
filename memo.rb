@@ -6,7 +6,8 @@ load conf if File.exists?(conf)
 
 DOCUMENT_ROOT = "~/Dropbox/memo" if !defined?(DOCUMENT_ROOT)
 PORT = 20000 if !defined?(PORT)
-RECENT_NUMS = 10 if !defined?(RECENT_NUMS)
+RECENT_NUM = 10 if !defined?(RECENT_NUM)
+RECENT_PATTERN = /.*/ if !defined?(RECENT_PATTERN)
 IGNORE_FILES = ['.DS_Store','.AppleDouble','.LSOverride','Icon',/^\./,/~$/,
                 '.Spotlight-V100','.Trashes','Thumbs.db','ehthumbs.db',
                 'Desktop.ini','$RECYCLE.BIN',/^#/,'MathJax'] if !defined?(IGNORE_FILES)
@@ -273,17 +274,21 @@ server.mount_proc('/') do |req, res|
       markdowns = []
       files = []
 
-      Find.find(filename) do |file|
-        Find.prune if ignore?(file)
-        recent << file if File.file?(file)
-      end
-      recent = recent.sort_by{|file| File.mtime(file)}.reverse.slice(0,RECENT_NUMS)
-      recent = recent.map{|file|
-        if markdown?(file) then
-          [get_title(file, open(file).read), uri(file)]
-        else [File::basename(file), uri(file)]
+      if RECENT_NUM > 0 then
+        Find.find(filename) do |file|
+          Find.prune if ignore?(file)
+          recent << file if File.file?(file) && file =~ RECENT_PATTERN
         end
-      }
+        recent = recent.sort_by{|file| File.mtime(file)}.reverse.slice(0,RECENT_NUM)
+        recent = recent.map{|file|
+          if markdown?(file) then
+            [get_title(file, open(file).read), uri(file)]
+          else [File::basename(file), uri(file)]
+          end
+        }
+      else
+        recent = []
+      end
 
       Dir.entries(filename).each do |i|
         next if ignore?(i)
@@ -299,7 +304,7 @@ server.mount_proc('/') do |req, res|
         end
       end
 
-      body += "\nRecent:\n---\n"
+      body += "\nRecent:\n---\n" if RECENT_NUM > 0
       recent.each {|i| body += link_list(i[0], i[1])}
 
       body += "\nDirectories:\n----\n"
