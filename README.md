@@ -28,8 +28,9 @@ Rubygems の Redcarpet が最低限必要。
 
     $ gem install redcarpet
 
-これだけでも動くけど、シンタックスハイライトしたいなら Python の Pygments が必要。
+これだけでも動くけど、シンタックスハイライトしたいなら Pygments.rb と Python の Pygments が必要。
 
+    $ gem install pygments.rb
     $ sudo easy_install pygments
 
 この後
