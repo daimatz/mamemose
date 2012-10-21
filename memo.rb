@@ -21,7 +21,10 @@ require 'webrick'
 require 'find'
 require 'uri'
 require 'redcarpet'
-require 'pygments.rb'
+begin
+  require 'pygments.rb'
+rescue LoadError
+end
 
 CONTENT_TYPE = "text/html; charset=utf-8"
 DIR = File::expand_path(DOCUMENT_ROOT, '/')
