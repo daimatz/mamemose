@@ -229,7 +229,7 @@ HTML
     uri += "/" + s
     link_str += File::SEPARATOR + "<a href='#{uri}'>#{s}</a>"
   end
-  link_str +=  " [<a class='filename' href=\"javascript:copy('#{docpath(uri)}');return false;\">copy</a>]"
+  link_str +=  " <a class='filename' href=\"javascript:copy('#{docpath(uri)}');return false;\">[copy]</a>"
   uri.gsub!('/'+File::basename(uri), "") if File.file?(path(uri))
   link_str = "<a href='/'>#{DOCUMENT_ROOT}</a>" + link_str
   search_form = <<HTML
