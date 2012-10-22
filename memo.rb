@@ -132,6 +132,7 @@ footer {
 .highlighttable { border: 1px solid #888; background-color: #f8f8f8; margin: 0.5em 1em }
 .highlighttable * { padding: 0; margin: 0; background: none; border: none }
 .highlighttable .code { width: 100%; padding: 0.3em 0.5em }
+.highlighttable .code * { background-color: #f8f8f8 }
 .highlighttable .linenos { color: #aaa; background-color: #eee; border-right: 1px solid #888; padding: 0.3em 0.3em }
 .hll { background-color: #ffffcc }
 .c { color: #888888; font-style: italic } /* Comment */
