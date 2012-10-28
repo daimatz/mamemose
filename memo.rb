@@ -10,21 +10,22 @@ RECENT_NUM = 10 if !defined?(RECENT_NUM)
 RECENT_PATTERN = /.*/ if !defined?(RECENT_PATTERN)
 IGNORE_FILES = ['.DS_Store','.AppleDouble','.LSOverride','Icon',/^\./,/~$/,
                 '.Spotlight-V100','.Trashes','Thumbs.db','ehthumbs.db',
-                'Desktop.ini','$RECYCLE.BIN',/^#/,'MathJax'] if !defined?(IGNORE_FILES)
+                'Desktop.ini','$RECYCLE.BIN',/^#/,'MathJax','syntaxhighlighter'] if !defined?(IGNORE_FILES)
 MARKDOWN_PATTERN = /\.(md|markdown)$/ if !defined?(MARKDOWN_PATTERN)
 CUSTOM_HEADER = '' if !defined?(CUSTOM_HEADER)
 CUSTOM_BODY = '' if !defined?(CUSTOM_BODY)
 CUSTOM_FOOTER = '' if !defined?(CUSTOM_FOOTER)
+SYNTAXHIGHLIGHT = ['AS3','AppleScript','Bash','CSharp','ColdFusion','Cpp','Css',
+                   'Delphi','Diff','Erlang','Groovy','Haskell','JScript','Java',
+                   'JavaFX','Perl','Php','Plain','PowerShell','Python','Ruby',
+                   'Sass','Scala','Sql','Vb','Xml'] if !defined?(SYNTAXHIGHLIGHT)
 
 require 'rubygems'
 require 'webrick'
 require 'find'
 require 'uri'
 require 'redcarpet'
-begin
-  require 'pygments.rb'
-rescue LoadError
-end
+require 'htmlentities'
 
 CONTENT_TYPE = "text/html; charset=utf-8"
 DIR = File::expand_path(DOCUMENT_ROOT, '/')
@@ -57,12 +58,6 @@ code {
     background-color: #f8f8f8;
     padding: 2px 0.5em;
     margin: 0 0.5em;
-}
-pre code {
-    border: none;
-    background-color: none;
-    padding: 0;
-    margin: 0;
 }
 a {
     text-decoration: none;
@@ -129,71 +124,6 @@ footer {
     text-align: right;
     margin: 5em 0 1em;
 }
-.highlighttable { border: 1px solid #888; background-color: #f8f8f8; margin: 0.5em 1em }
-.highlighttable * { padding: 0; margin: 0; background: none; border: none }
-.highlighttable .code { width: 100%; padding: 0.3em 0.5em }
-.highlighttable .code * { background-color: #f8f8f8 }
-.highlighttable .linenos { color: #aaa; background-color: #eee; border-right: 1px solid #888; padding: 0.3em 0.3em }
-.hll { background-color: #ffffcc }
-.c { color: #888888; font-style: italic } /* Comment */
-.err { color: #a61717; background-color: #e3d2d2 } /* Error */
-.k { color: #880088; font-weight: bold } /* Keyword */
-.cm { color: #888888; font-style: italic } /* Comment.Multiline */
-.cp { color: #cc0000; font-weight: bold } /* Comment.Preproc */
-.c1 { color: #888888; font-style: italic } /* Comment.Single */
-.cs { color: #cc0000; font-weight: bold; background-color: #fff0f0 } /* Comment.Special */
-.gd { color: #000000; background-color: #ffdddd } /* Generic.Deleted */
-.ge { font-style: italic } /* Generic.Emph */
-.gr { color: #aa0000 } /* Generic.Error */
-.gh { color: #303030 } /* Generic.Heading */
-.gi { color: #000000; background-color: #ddffdd } /* Generic.Inserted */
-.go { color: #888888 } /* Generic.Output */
-.gp { color: #555555 } /* Generic.Prompt */
-.gs { font-weight: bold } /* Generic.Strong */
-.gu { color: #606060 } /* Generic.Subheading */
-.gt { color: #aa0000 } /* Generic.Traceback */
-.kc { color: #880088; font-weight: bold } /* Keyword.Constant */
-.kd { color: #880088; font-weight: bold } /* Keyword.Declaration */
-.kn { color: #880088; font-weight: bold } /* Keyword.Namespace */
-.kp { color: #880088 } /* Keyword.Pseudo */
-.kr { color: #880088; font-weight: bold } /* Keyword.Reserved */
-.kt { color: #008800; font-weight: bold } /* Keyword.Type */
-.m { color: #000000 } /* Literal.Number */
-.s { color: #dd2200 } /* Literal.String */
-.na { color: #336699 } /* Name.Attribute */
-.nb { color: #003388 } /* Name.Builtin */
-.nc { color: #bb0066; font-weight: bold } /* Name.Class */
-.no { color: #003366; font-weight: bold } /* Name.Constant */
-.nd { color: #555555 } /* Name.Decorator */
-.ne { color: #bb0066; font-weight: bold } /* Name.Exception */
-.nf { color: #0066bb; font-weight: bold } /* Name.Function */
-.nl { color: #336699; font-style: italic } /* Name.Label */
-.nn { color: #000000; font-weight: bold } /* Name.Namespace */
-.py { color: #336699; font-weight: bold } /* Name.Property */
-.nt { color: #bb0066; font-weight: bold } /* Name.Tag */
-.nv { color: #336699 } /* Name.Variable */
-.ow { color: #888800; font-weight: bold } /* Operator.Word */
-.w { color: #bbbbbb } /* Text.Whitespace */
-.mf { color: #000000 } /* Literal.Number.Float */
-.mh { color: #000000 } /* Literal.Number.Hex */
-.mi { color: #000000 } /* Literal.Number.Integer */
-.mo { color: #000000 } /* Literal.Number.Oct */
-.sb { color: #dd2200 } /* Literal.String.Backtick */
-.sc { color: #dd2200 } /* Literal.String.Char */
-.sd { color: #dd2200 } /* Literal.String.Doc */
-.s2 { color: #dd2200 } /* Literal.String.Double */
-.se { color: #0044dd } /* Literal.String.Escape */
-.sh { color: #dd2200 } /* Literal.String.Heredoc */
-.si { color: #3333bb } /* Literal.String.Interpol */
-.sx { color: #22bb22 } /* Literal.String.Other */
-.sr { color: #008800 } /* Literal.String.Regex */
-.s1 { color: #dd2200 } /* Literal.String.Single */
-.ss { color: #aa6600 } /* Literal.String.Symbol */
-.bp { color: #003388 } /* Name.Builtin.Pseudo */
-.vc { color: #336699 } /* Name.Variable.Class */
-.vg { color: #dd7700 } /* Name.Variable.Global */
-.vi { color: #3333bb } /* Name.Variable.Instance */
-.il { color: #000000 } /* Literal.Number.Integer.Long */
 --></style>
 <script>
 function copy(text) {
@@ -221,6 +151,20 @@ function copy(text) {
   else prompt("Copy filepath below:", text);
 }
 </script>
+HTML
+  if SYNTAXHIGHLIGHT && !SYNTAXHIGHLIGHT.empty?
+    html += <<HTML
+<script type="text/javascript" src="/syntaxhighlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="/syntaxhighlighter/scripts/shAutoloader.js"></script>
+<script type="text/javascript" src="/syntaxhighlighter/scripts/shLegacy.js"></script>
+<link type="text/css" rel="stylesheet" href="/syntaxhighlighter/styles/shCoreDefault.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+HTML
+    SYNTAXHIGHLIGHT.each do |js|
+      html += "<script type='text/javascript' src='/syntaxhighlighter/scripts/shBrush#{js}.js'></script>\n"
+    end
+  end
+  html += <<HTML
 #{CUSTOM_HEADER}
 </head>
 <body>
@@ -295,23 +239,23 @@ def get_title(filename, str="")
   return title =~ /^\s*$/ ? File::basename(filename) : title
 end
 
-class HTMLwithPygments < Redcarpet::Render::XHTML
-  def block_code(code, language)
-    if language && !language.empty?
-      begin
-        s = Pygments.highlight(code, :lexer => language, :options => {:encoding => 'utf-8', :linenos=>'table'})
-        s += '>' if s[s.size-1] != '>' # bug?
-        return s
-      rescue => e
-        puts e
+class HTMLwithSyntaxHighlighter < Redcarpet::Render::XHTML
+  def block_code(code, lang)
+    code = HTMLEntities.new.encode(code)
+    if SYNTAXHIGHLIGHT && !SYNTAXHIGHLIGHT.empty?
+      if SYNTAXHIGHLIGHT.map {|s| s.downcase }.index(lang)
+        return "<pre class='brush: #{lang}'>#{code}</pre>"
+      else
+        return "<pre class='brush: plain'>#{code}</pre>"
       end
+    else
+      return "<pre>#{code}</pre>"
     end
-    "<pre><code>#{code}</code></pre>"
   end
 end
 
 def markdown(text)
-  renderer = HTMLwithPygments.new(optionize([]))
+  renderer = HTMLwithSyntaxHighlighter.new(optionize([]))
   markdown = Redcarpet::Markdown.new(renderer, optionize([:strikethrough, :autolink, :fenced_code_blocks,]))
   markdown.render(text)
 end

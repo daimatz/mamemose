@@ -24,34 +24,19 @@ Markdown memo server
 
 ### ライブラリ等
 
-Rubygems の Redcarpet が最低限必要。
+Rubygems の Redcarpet と htmlentities が必要。
 
-    $ gem install redcarpet
+    $ gem install redcarpet htmlentities
 
-これだけでも動くけど、シンタックスハイライトしたいなら Pygments.rb と Python の Pygments が必要。
+またシンタックスハイライトに [SyntaxHighlighter](http://alexgorbatchev.com/SyntaxHighlighter/) を使う。
+ダウンロードして解凍、ディレクトリ名を `syntaxhighlighter` にして `DOCUMENT_ROOT` 直下に置く。
+独自定義シンタックスハイライトしたいものがある場合は `SYNTAXHIGHLIGHT` にそれも書く。
 
-    $ gem install pygments.rb
-    $ sudo easy_install pygments
+またスタイルが気に入らない場合は `CUSTOM_HEADER` に
 
-この後
+    <link type="text/css" rel="stylesheet" href="/syntaxhighlighter/styles/shThemeEmacs.css"/>
 
-    $ which pygmentize
-
-できちんと見つかることを確認。
-
-Pygments のカラーリングが気に入らない場合は
-`Pygments CSS` とかでググって好きな CSS を拾ってくるか、
-
-    $ pygmentize -S default -f html > syntax.css
-
-として CSS ファイルを生成してください。
-CSS ファイルを `DOCUMENT_ROOT` 直下に置いて、 `conf.rb` 内で
-
-    CUSTOM_HEADER = <<HEADER
-    <link rel="stylesheet" type="text/css" href="/syntax.css" media="screen" />
-    HEADER
-
-とでもすれば上書きされるはずです。
+などと書けば上書きされる。
 
 設定
 ----
@@ -78,6 +63,11 @@ CSS ファイルを `DOCUMENT_ROOT` 直下に置いて、 `conf.rb` 内で
     - カスタムボディ。 `body` タグの最初に入る
 - `CUSTOM_FOOTER`
     - カスタムフッタ。 `body` タグの最後に入る
+- `SYNTAXHIGHLIGHT`
+    - シンタックスハイライトを行う言語のリスト。
+      それぞれ `/syntaxhighlighter/scripts/shBrush#{lang}.js` を読み込むので、ここに js ファイルが必要。
+      独自定義ファイルもここに置いて、そのルールでシンタックスハイライトできる。
+      `nil` または空にするとシンタックスハイライトしない。
 
 設定されなかったらデフォルト値を使います。
 
