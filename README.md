@@ -41,7 +41,8 @@ Rubygems の Redcarpet と htmlentities が必要。
 設定
 ----
 
-同じディレクトリに `conf.rb` という設定ファイルを置くとそれを読みます。
+ホームディレクトリに `.memo.conf.rb` もしくは
+`memo.rb` と同じディレクトリに `conf.rb` という設定ファイルを置くとそれを読みます。
 設定項目は以下の通り
 
 - `DOCUMENT_ROOT`
@@ -73,7 +74,7 @@ Rubygems の Redcarpet と htmlentities が必要。
 
 ### 設定ファイル例
 
-`conf.rb`
+`~/.memo.conf.rb` もしくは `conf.rb`
 
     DOCUMENT_ROOT = "~/memo"
 
