@@ -256,14 +256,11 @@ class HTMLwithSyntaxHighlighter < Redcarpet::Render::XHTML
 end
 
 def markdown(text)
-  renderer = HTMLwithSyntaxHighlighter.new(optionize([]))
-  markdown = Redcarpet::Markdown.new(renderer, optionize([:strikethrough, :autolink, :fenced_code_blocks,]))
+  markdown = Redcarpet::Markdown.new(HTMLwithSyntaxHighlighter,
+                                     {:strikethrough => true,
+                                       :autolink => true,
+                                       :fenced_code_blocks => true})
   markdown.render(text)
-end
-
-def optionize(options)
-  #options.each_with_object({}) { |option, memo| memo[option] = true } #1.9 ruby only
-  options.inject({}) {|memo, option| memo[option] = true; memo} #http://stackoverflow.com/questions/5481009/why-is-enumerableeach-with-object-deprecated
 end
 
 server = WEBrick::HTTPServer.new({ :Port => PORT })
