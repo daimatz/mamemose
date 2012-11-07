@@ -269,6 +269,9 @@ end
 server = WEBrick::HTTPServer.new({ :Port => PORT })
 
 server.mount_proc('/') do |req, res|
+  res['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+  res['Pragma'] = 'no-cache'
+  res['Expires'] = '0'
   if req.path =~ /^\/search/
     query = req.query
     path = path(query["path"])
