@@ -152,20 +152,6 @@ function copy(text) {
   else prompt("Copy filepath below:", text);
 }
 </script>
-HTML
-  if SYNTAXHIGHLIGHT && !SYNTAXHIGHLIGHT.empty?
-    html += <<HTML
-<script type="text/javascript" src="/syntaxhighlighter/scripts/shCore.js"></script>
-<script type="text/javascript" src="/syntaxhighlighter/scripts/shAutoloader.js"></script>
-<script type="text/javascript" src="/syntaxhighlighter/scripts/shLegacy.js"></script>
-<link type="text/css" rel="stylesheet" href="/syntaxhighlighter/styles/shCoreDefault.css"/>
-<script type="text/javascript">SyntaxHighlighter.all();</script>
-HTML
-    SYNTAXHIGHLIGHT.each do |js|
-      html += "<script type='text/javascript' src='/syntaxhighlighter/scripts/shBrush#{js}.js'></script>\n"
-    end
-  end
-  html += <<HTML
 #{CUSTOM_HEADER}
 </head>
 <body>
@@ -197,9 +183,23 @@ def footer_html
 <footer>
 <a href="https://github.com/daimatz/memo">https://github.com/daimatz/memo</a>
 </footer>
+HTML
+  if SYNTAXHIGHLIGHT && !SYNTAXHIGHLIGHT.empty?
+    html += <<HTML
+<script type="text/javascript" src="/syntaxhighlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="/syntaxhighlighter/scripts/shAutoloader.js"></script>
+<link type="text/css" rel="stylesheet" href="/syntaxhighlighter/styles/shCoreDefault.css"/>
+<script type="text/javascript">
+SyntaxHighlighter.autoloader(
+HTML
+    html += SYNTAXHIGHLIGHT.map{|x|"'#{x} #{x.downcase} /syntaxhighlighter/scripts/shBrush#{x}.js'"}.join(",\n")
+    html += "\n);\nSyntaxHighlighter.all();\n</script>"
+  end
+  html += <<HTML
 </body>
 </html>
 HTML
+  return html
 end
 
 def uri(path)
