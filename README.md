@@ -28,15 +28,9 @@ Rubygems の Redcarpet と htmlentities が必要。
 
     $ gem install redcarpet htmlentities
 
-またシンタックスハイライトに [SyntaxHighlighter](http://alexgorbatchev.com/SyntaxHighlighter/) を使う。
-ダウンロードして解凍、ディレクトリ名を `syntaxhighlighter` にして `DOCUMENT_ROOT` 直下に置く。
-独自定義シンタックスハイライトしたいものがある場合は `SYNTAXHIGHLIGHT` にそれも書く。
-
-またスタイルが気に入らない場合は `CUSTOM_HEADER` に
-
-    <link type="text/css" rel="stylesheet" href="/syntaxhighlighter/styles/shThemeEmacs.css"/>
-
-などと書けば上書きされる。
+またコード部分に GitHub Flavored Markdown の記法を使い、シンタックスハイライトに
+[SyntaxHighlighter](http://alexgorbatchev.com/SyntaxHighlighter/)
+を使うことができる。設定例を参照。
 
 設定
 ----
@@ -64,11 +58,6 @@ Rubygems の Redcarpet と htmlentities が必要。
     - カスタムボディ。 `body` タグの最初に入る
 - `CUSTOM_FOOTER`
     - カスタムフッタ。 `body` タグの最後に入る
-- `SYNTAXHIGHLIGHT`
-    - シンタックスハイライトを行う言語のリスト。
-      それぞれ `/syntaxhighlighter/scripts/shBrush#{lang}.js` を読み込むので、ここに js ファイルが必要。
-      独自定義ファイルもここに置いて、そのルールでシンタックスハイライトできる。
-      `nil` または空にするとシンタックスハイライトしない。
 
 設定されなかったらデフォルト値を使います。
 
@@ -76,25 +65,64 @@ Rubygems の Redcarpet と htmlentities が必要。
 
 `~/.memo.conf.rb` もしくは `conf.rb`
 
-    DOCUMENT_ROOT = "~/memo"
+```ruby
+DOCUMENT_ROOT = "~/memo"
 
-    PORT = 8888
+PORT = 8888
 
-    # 通常の Markdown ファイルに加えて .txt ファイルも Markdown と見なす
-    MARKDOWN_PATTERN = /\.(md|markdown|txt)$/
+# 通常の Markdown ファイルに加えて .txt ファイルも Markdown と見なす
+MARKDOWN_PATTERN = /\.(md|markdown|txt)$/
 
-    # 最近更新したファイル一覧がジャマ
-    RECENT_NUM = 0
+# 最近更新したファイル一覧がジャマ
+RECENT_NUM = 0
 
-    # 最近更新したファイル一覧に出すものを Markdown ドキュメントだけにする
-    # RECENT_PATTERN = MARKDOWN_PATTERN
+# 最近更新したファイル一覧に出すものを Markdown ドキュメントだけにする
+# RECENT_PATTERN = MARKDOWN_PATTERN
 
-    # すべてのページで MathJax が使えるように
-    CUSTOM_HEADER = <<HEADER
-    <script type="text/javascript"
-      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML">
-    </script>
-    HEADER
+# すべてのページで MathJax が使えるように
+CUSTOM_HEADER = <<HEADER
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML">
+</script>
+HEADER
+
+# すべてのページで SyntaxHighlighter が使えるように
+CUSTOM_FOOTER = <<FOOTER
+<link href="http://alexgorbatchev.com/pub/sh/current/styles/shCoreDefault.css" rel="stylesheet" type="text/css" />
+<script src="http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js" type="text/javascript"></script>
+<script src="http://alexgorbatchev.com/pub/sh/current/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+SyntaxHighlighter.autoloader(
+'AS3 as3 http://alexgorbatchev.com/pub/sh/current/scripts/shBrushAS3.js',
+'AppleScript applescript http://alexgorbatchev.com/pub/sh/current/scripts/shBrushAppleScript.js',
+'Bash bash http://alexgorbatchev.com/pub/sh/current/scripts/shBrushBash.js',
+'CSharp csharp http://alexgorbatchev.com/pub/sh/current/scripts/shBrushCSharp.js',
+'ColdFusion coldfusion http://alexgorbatchev.com/pub/sh/current/scripts/shBrushColdFusion.js',
+'Cpp cpp http://alexgorbatchev.com/pub/sh/current/scripts/shBrushCpp.js',
+'Css css http://alexgorbatchev.com/pub/sh/current/scripts/shBrushCss.js',
+'Delphi delphi http://alexgorbatchev.com/pub/sh/current/scripts/shBrushDelphi.js',
+'Diff diff http://alexgorbatchev.com/pub/sh/current/scripts/shBrushDiff.js',
+'Erlang erlang http://alexgorbatchev.com/pub/sh/current/scripts/shBrushErlang.js',
+'Groovy groovy http://alexgorbatchev.com/pub/sh/current/scripts/shBrushGroovy.js',
+'JScript jscript http://alexgorbatchev.com/pub/sh/current/scripts/shBrushJScript.js',
+'Java java http://alexgorbatchev.com/pub/sh/current/scripts/shBrushJava.js',
+'JavaFX javafx http://alexgorbatchev.com/pub/sh/current/scripts/shBrushJavaFX.js',
+'Perl perl http://alexgorbatchev.com/pub/sh/current/scripts/shBrushPerl.js',
+'Php php http://alexgorbatchev.com/pub/sh/current/scripts/shBrushPhp.js',
+'Plain plain http://alexgorbatchev.com/pub/sh/current/scripts/shBrushPlain.js',
+'PowerShell powershell http://alexgorbatchev.com/pub/sh/current/scripts/shBrushPowerShell.js',
+'Python python http://alexgorbatchev.com/pub/sh/current/scripts/shBrushPython.js',
+'Ruby ruby http://alexgorbatchev.com/pub/sh/current/scripts/shBrushRuby.js',
+'Sass sass http://alexgorbatchev.com/pub/sh/current/scripts/shBrushSass.js',
+'Scala scala http://alexgorbatchev.com/pub/sh/current/scripts/shBrushScala.js',
+'Sql sql http://alexgorbatchev.com/pub/sh/current/scripts/shBrushSql.js',
+'Vb vb http://alexgorbatchev.com/pub/sh/current/scripts/shBrushVb.js',
+'Xml xml http://alexgorbatchev.com/pub/sh/current/scripts/shBrushXml.js'
+);
+SyntaxHighlighter.all();
+</script>
+FOOTER
+```
 
 使い方
 ----

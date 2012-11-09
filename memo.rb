@@ -16,10 +16,6 @@ MARKDOWN_PATTERN = /\.(md|markdown)$/ if !defined?(MARKDOWN_PATTERN)
 CUSTOM_HEADER = '' if !defined?(CUSTOM_HEADER)
 CUSTOM_BODY = '' if !defined?(CUSTOM_BODY)
 CUSTOM_FOOTER = '' if !defined?(CUSTOM_FOOTER)
-SYNTAXHIGHLIGHT = ['AS3','AppleScript','Bash','CSharp','ColdFusion','Cpp','Css',
-                   'Delphi','Diff','Erlang','Groovy','Haskell','JScript','Java',
-                   'JavaFX','Perl','Php','Plain','PowerShell','Python','Ruby',
-                   'Sass','Scala','Sql','Vb','Xml'] if !defined?(SYNTAXHIGHLIGHT)
 
 require 'rubygems'
 require 'webrick'
@@ -162,19 +158,6 @@ def footer_html
 <footer>
 <a href="https://github.com/daimatz/memo">https://github.com/daimatz/memo</a>
 </footer>
-HTML
-  if SYNTAXHIGHLIGHT && !SYNTAXHIGHLIGHT.empty?
-    html += <<HTML
-<script type="text/javascript" src="/syntaxhighlighter/scripts/shCore.js"></script>
-<script type="text/javascript" src="/syntaxhighlighter/scripts/shAutoloader.js"></script>
-<link type="text/css" rel="stylesheet" href="/syntaxhighlighter/styles/shCoreDefault.css"/>
-<script type="text/javascript">
-SyntaxHighlighter.autoloader(
-HTML
-    html += SYNTAXHIGHLIGHT.map{|x|"'#{x} #{x.downcase} /syntaxhighlighter/scripts/shBrush#{x}.js'"}.join(",\n")
-    html += "\n);\nSyntaxHighlighter.all();\n</script>"
-  end
-  html += <<HTML
 </body>
 </html>
 HTML
@@ -222,15 +205,8 @@ end
 class HTMLwithSyntaxHighlighter < Redcarpet::Render::XHTML
   def block_code(code, lang)
     code = HTMLEntities.new.encode(code)
-    if SYNTAXHIGHLIGHT && !SYNTAXHIGHLIGHT.empty?
-      if SYNTAXHIGHLIGHT.map {|s| s.downcase }.index(lang)
-        return "<pre class='brush: #{lang}'>#{code}</pre>"
-      else
-        return "<pre class='brush: plain'>#{code}</pre>"
-      end
-    else
-      return "<pre>#{code}</pre>"
-    end
+    lang ||= "plain"
+    return "<pre class='brush: #{lang}'>#{code}</pre>"
   end
 end
 
