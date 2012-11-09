@@ -128,28 +128,7 @@ footer {
 --></style>
 <script>
 function copy(text) {
-  var input, success;
-  if ("console" in window && "notifyFirebug" in console) {
-    console.notifyFirebug([text], "copy", "firebugExecuteCommand");
-    success = true;
-  } else {
-    input = document.createElement("input");
-    input.style.position = "absolute";
-    input.style.top = "-100px";
-    input.value = text;
-    input.hidden = true;
-    document.body.appendChild(input);
-    input.select();
-    try {
-      success = document.execCommand("copy", false, null);
-    } catch (ex) {
-      success = false;
-    } finally {
-      document.body.removeChild(input);
-    }
-  }
-  if (success) alert("Copied filepath.");
-  else prompt("Copy filepath below:", text);
+  prompt("Copy filepath below:", text);
 }
 </script>
 #{CUSTOM_HEADER}
@@ -164,7 +143,7 @@ HTML
     uri += "/" + s
     link_str += File::SEPARATOR + "<a href='#{uri}'>#{s}</a>"
   end
-  link_str +=  " <a class='filename' href=\"javascript:copy('#{docpath(uri)}');return false;\">[copy]</a>"
+  link_str +=  " <a class='filename' href=\"javascript:copy('#{docpath(uri)}');\">[copy]</a>"
   uri.gsub!('/'+File::basename(uri), "") if File.file?(path(uri))
   link_str = "<a href='/'>#{DOCUMENT_ROOT}</a>" + link_str
   search_form = <<HTML
@@ -218,7 +197,7 @@ end
 def link_list(title, link)
   file = path(link)
   str = File.file?(file) ? sprintf("%.1fKB", File.size(file) / 1024.0) : "dir"
-  return "- [#{title}](#{link}) <a class='filename' href=\"javascript:copy('#{docpath(link)}');return false;\">[#{File.basename(link)}, #{str}]</a>\n"
+  return "- [#{title}](#{link}) <a class='filename' href=\"javascript:copy('#{docpath(link)}');\">[#{File.basename(link)}, #{str}]</a>\n"
 end
 
 def markdown?(file)
