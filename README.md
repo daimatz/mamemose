@@ -23,15 +23,46 @@ mamemose: Markdown memo server
 - Linux はおそらく大丈夫
 - Windows も、こないだ Cygwin 上で試したら動いたのでたぶん動くと思う
 
-### ライブラリ等
+インストール方法
+----
 
-Rubygems の Redcarpet と htmlentities が必要。
+```bash
+$ gem install mamemose
+```
 
-    $ gem install redcarpet htmlentities
+使い方
+----
 
-またコード部分に GitHub Flavored Markdown の記法を使い、シンタックスハイライトに
+設定ファイル (後述) を書いたら以下で起動
+
+```bash
+$ mamemose &> /dev/null &
+```
+
+ブラウザから
+
+```
+http://localhost:PORT/
+```
+
+にアクセスすればおｋ
+
+`DOCUMENT_ROOT` 以下の Markdown で書かれたテキストを勝手にHTMLに変換して表示します。
+一覧ページでは Markdown ドキュメントの1行目をタイトルとして読み込みます。
+
+`DOCUMENT_ROOT` を Dropbox 以下のディレクトリに指定しておけば、どのマシンからでも
+メモにアクセスできるようになります。
+
+### シンタックスハイライト
+
+[コード部分に GitHub Flavored Markdown の記法](http://github.github.com/github-flavored-markdown/)
+を使い、シンタックスハイライトに
 [SyntaxHighlighter](http://alexgorbatchev.com/SyntaxHighlighter/)
-を使うことができる。設定例を参照。
+を使うことができます。設定例を参照。
+
+### 数式
+
+[MathJax](http://www.mathjax.org/) を使うと数式も書けます。設定例を参照。
 
 設定
 ----
@@ -87,8 +118,7 @@ CUSTOM_HEADER = <<HEADER
 HEADER
 
 # すべてのページで SyntaxHighlighter が使えるように
-host = "http://alexgorbatchev.com/pub/sh/current"
-# 普通の Ruby コードなので変数も使える
+host = "http://alexgorbatchev.com/pub/sh/current" # 変数も使えます
 CUSTOM_FOOTER = <<FOOTER
 <link href="#{host}/styles/shCoreDefault.css" rel="stylesheet" type="text/css" />
 <script src="#{host}/scripts/shCore.js" type="text/javascript"></script>
@@ -126,28 +156,38 @@ SyntaxHighlighter.all();
 FOOTER
 ```
 
-使い方
-----
+### 使用例
 
-設定ファイルを書いたら以下で起動
+上記のように設定すると、次のような Markdown ファイル `~/memo/sample.md` は
 
-```bash
-$ ruby mamemose.rb &> /dev/null &
-```
+    数列
+    ====
 
-ブラウザから
+    問題
+    ----
 
-```
-http://localhost:PORT/
-```
+    和の公式
+    $$ \sum\_{k=1}^n k = \frac{1}{2}n(n+1) $$
+    を計算する関数を C++ で実装せよ。
 
-にアクセスすればおｋ
+    解答
+    ----
 
-`DOCUMENT_ROOT` 以下の Markdown で書かれたテキストを勝手にHTMLに変換して表示します。
-一覧ページでは Markdown ドキュメントの1行目をタイトルとして読み込みます。
+    ```cpp
+    int f(int n) {
+      int ret = 0;
+      for (int k = 1; k <= n; k++) {
+        ret += k;
+      }
+      return ret;
+    }
+    ```
 
-`DOCUMENT_ROOT` を Dropbox 以下のディレクトリに指定しておけば、どのマシンからでも
-メモにアクセスできるようになります。
+次のように表示される。
+
+![](https://raw.github.com/daimatz/mamemose/master/sample.png)
+
+MathJax と SyntaxHighlighter はローカルにダウンロードして使うのが親切だと思います。
 
 検索
 ----
@@ -155,11 +195,22 @@ http://localhost:PORT/
 Markdown ドキュメントを全文検索して一致したものを表示します。
 Markdown ドキュメントでないものはファイル名に一致したものを表示します。
 
-遅い
+FAQ と予想されるもの
 ----
 
-- 一覧ページでは「最近更新したファイル」を表示するため、
-  そのディレクトリ以下の全ファイルを舐めているので遅いです。
-  `RECENT_NUM = 0` にしてください。
-- 検索が遅いのはどうしようもないです。ファイル数 3000 くらいまでなら
-  まあ使えるかなというのは確認したつもりですが
+- 遅いよ
+    - 一覧ページでは「最近更新したファイル」を表示するために
+      そのディレクトリ以下の全ファイルを舐めているので遅いです。
+      `RECENT_NUM = 0` にしてください。
+    - 検索が遅いのはどうしようもないです。ファイル数 3000 くらいまでなら
+      まあ使えるかなというのは確認したつもりですが
+    - SSD 積んでますか？
+- 他の言語もシンタックスハイライトしたいんだけど
+    - SyntaxHighlighter の構文ファイルを自分で書いて読み込むようにしましょう
+    - Haskell 用のは書きました [gist](https://gist.github.com/3969549)
+- reStructuredText 対応して
+    - Python で書いてください
+- 表を書きたいんだけど
+    - 無理。 table タグ書いてください
+- 定義リストを書きたいんだけど
+    - 同上
