@@ -53,6 +53,8 @@ http://localhost:PORT/
 `DOCUMENT_ROOT` を Dropbox 以下のディレクトリに指定しておけば、どのマシンからでも
 メモにアクセスできるようになります。
 
+文字コードは UTF-8 で書くようにしてください。
+
 ### シンタックスハイライト
 
 [コード部分に GitHub Flavored Markdown の記法](http://github.github.com/github-flavored-markdown/)
@@ -158,7 +160,8 @@ FOOTER
 
 ### 使用例
 
-上記のように設定すると、次のような Markdown ファイル `~/memo/sample.md` は
+上記のように設定ファイルを書いたとする。
+次のような Markdown ファイル `~/memo/sample.md` を書くと、
 
     数列
     ====
@@ -183,7 +186,11 @@ FOOTER
     }
     ```
 
-次のように表示される。
+一覧ページでは次のように表示される。
+
+![](https://raw.github.com/daimatz/mamemose/master/index.png)
+
+またこのファイルの表示は次のようになる。
 
 ![](https://raw.github.com/daimatz/mamemose/master/sample.png)
 
@@ -202,7 +209,7 @@ FAQ と予想されるもの
     - 一覧ページでは「最近更新したファイル」を表示するために
       そのディレクトリ以下の全ファイルを舐めているので遅いです。
       `RECENT_NUM = 0` にしてください。
-    - 検索が遅いのはどうしようもないです。ファイル数 3000 くらいまでなら
+    - 検索が遅いのはどうしようもないです。 5KB 〜 10KB くらいのメモが 3000 件くらいまでなら
       まあ使えるかなというのは確認したつもりですが
     - SSD 積んでますか？
 - 他の言語もシンタックスハイライトしたいんだけど
