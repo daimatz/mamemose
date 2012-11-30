@@ -1,8 +1,7 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
-conf = File.expand_path("~" + File::SEPARATOR + ".memo.conf.rb")
-conf = File.dirname(File.expand_path(__FILE__)) + File::SEPARATOR + "conf.rb" if !File.exists?(conf)
+conf = File.expand_path("~" + File::SEPARATOR + ".mamemose.rb")
 load conf if File.exists?(conf)
 
 DOCUMENT_ROOT = "~/Dropbox/memo" if !defined?(DOCUMENT_ROOT)
@@ -118,6 +117,7 @@ a.filename {
 footer {
     border-top: 1px dotted black;
     padding: 0.5em;
+    font-size: 80%;
     text-align: right;
     margin: 5em 0 1em;
 }
@@ -156,7 +156,7 @@ def footer_html
   html = <<HTML
 #{CUSTOM_FOOTER}
 <footer>
-<a href="https://github.com/daimatz/memo">https://github.com/daimatz/memo</a>
+<a href="https://github.com/daimatz/mamemose">mamemose: Markdown memo server</a>
 </footer>
 </body>
 </html>
