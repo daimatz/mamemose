@@ -186,11 +186,11 @@ FOOTER
     }
     ```
 
-一覧ページでは次のように表示される。
+一覧ページ (http://localhost:8888/) では次のように表示される。
 
 ![](https://raw.github.com/daimatz/mamemose/master/index.png)
 
-またこのファイルの表示は次のようになる。
+またこのファイルの表示 (http://localhost:8888/sample.md) は次のようになる。
 
 ![](https://raw.github.com/daimatz/mamemose/master/sample.png)
 
