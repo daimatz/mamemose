@@ -70,29 +70,36 @@ http://localhost:PORT/
 ----
 
 ホームディレクトリに `.mamemose.rb` という設定ファイルを置くとそれを読みます。
-設定項目は以下の通り
+設定項目は以下の通りで、
+設定されなかったらデフォルト値を使います。
 
 - `DOCUMENT_ROOT`
-    - ドキュメントルート
+    - ドキュメントルート。デフォルトは `~/Dropbox/memo`
 - `PORT`
-    - ポート。 http://localhost:PORT/ にアクセス
+    - ポート。 http://localhost:PORT/ にアクセス。デフォルトは 20000
 - `MARKDOWN_PATTERN`
-    - Markdown ドキュメントと見なすファイルパターンを正規表現で
+    - Markdown ドキュメントと見なすファイルパターンを正規表現で。デフォルトは `/\.(md|markdown)$/`
+- `RECENT_NUM`
+    - 「最近更新したファイル」を表示する数。デフォルトは 10
+- `RECENT_PATTERN`
+    - 「最近更新したファイル」に表示するファイルパターンを正規表現で。
+       デフォルトは `/.*/`、つまり任意のファイルにマッチします。
+- `CUSTOM_HEADER`
+    - カスタムヘッダ。 `head` タグの最後に入る。デフォルトは空文字列。
+- `CUSTOM_BODY`
+    - カスタムボディ。 `body` タグの最初に入る。デフォルトは空文字列。
+- `CUSTOM_FOOTER`
+    - カスタムフッタ。 `body` タグの最後に入る。デフォルトは空文字列。
 - `IGNORE_FILES`
     - 無視するファイル・ディレクトリのリスト。
-      文字列の場合はそのものを、正規表現の場合はそれにマッチするものを無視する
-- `RECENT_NUM`
-    - 「最近更新したファイル」を表示する数
-- `RECENT_PATTERN`
-    - 「最近更新したファイル」に表示するファイルパターンを正規表現で
-- `CUSTOM_HEADER`
-    - カスタムヘッダ。 `head` タグの最後に入る
-- `CUSTOM_BODY`
-    - カスタムボディ。 `body` タグの最初に入る
-- `CUSTOM_FOOTER`
-    - カスタムフッタ。 `body` タグの最後に入る
+      文字列の場合はそのものを、正規表現の場合はそれにマッチするものを無視する。
+      デフォルトは以下の通り。
 
-設定されなかったらデフォルト値を使います。
+```ruby
+['_Store','.AppleDouble','.LSOverride','Icon',/^\./,/~$/,
+ '.Spotlight-V100','.Trashes','Thumbs.db','ehthumbs.db',
+ 'Desktop.ini','$RECYCLE.BIN',/^#/,'MathJax','syntaxhighlighter']
+```
 
 ### 設定ファイル例
 
