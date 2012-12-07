@@ -137,7 +137,7 @@ class Mamemose::Server
             if markdown?(req.path)
               str = file.read
               title = get_title(filename, str)
-              res.body = header_html(title, req.path) + markdown(str) + footer_html
+              res.body = header_html(title, req.path) + markdown(str) + footer_html(path(req.path))
               res.content_type = CONTENT_TYPE
             else
               res.body = file.read
@@ -289,10 +289,12 @@ HTML
     return html + "<div id=\"header\">#{link_str}#{search_form}</div>"
   end
 
-  def footer_html
+  def footer_html(filepath=nil)
+    updated = filepath ? "Last Updated: " + File.mtime(filepath).strftime("%Y-%m-%d %H:%M:%S") + " / " : ""
     html = <<HTML
 #{CUSTOM_FOOTER}
 <footer>
+#{updated}
 <a href="https://github.com/daimatz/mamemose">mamemose: Markdown memo server</a>
 </footer>
 </body>
