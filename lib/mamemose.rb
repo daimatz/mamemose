@@ -303,6 +303,10 @@ HTML
     return html
   end
 
+  def escape(text)
+    return text.gsub(/[\`*_{}\[\]()#+-.!]/, "\\\\\\0")
+  end
+
   def uri(path)
     s = File::expand_path(path).gsub(DIR, "").gsub(File::SEPARATOR, '/')
     return s == '' ? '/' : s
@@ -319,7 +323,7 @@ HTML
   def link_list(title, link)
     file = path(link)
     str = File.file?(file) ? sprintf("%.1fKB", File.size(file) / 1024.0) : "dir"
-    return "- [#{title}](#{link}) <a class='filename' href=\"javascript:copy('#{docpath(link)}');\">[#{File.basename(link)}, #{str}]</a>\n"
+    return "- [#{title}](#{link}) <a class='filename' href=\"javascript:copy('#{docpath(link)}');\">[#{escape(File.basename(link))}, #{str}]</a>\n"
   end
 
   def markdown?(file)
