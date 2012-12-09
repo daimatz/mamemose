@@ -26,6 +26,12 @@ mamemose: Markdown memo server
 インストール方法
 ----
 
+RubyGems で公開されています。
+
+- <https://rubygems.org/gems/mamemose>
+
+インストールは
+
 ```bash
 $ gem install mamemose
 ```
