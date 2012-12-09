@@ -42,7 +42,7 @@ class Mamemose::Server
       res['Expires'] = '0'
       if req.path =~ /^\/search/
         query = req.query
-        path = path(query["path"])
+        path = fullpath(query["path"])
         q = URI.decode(query["q"])
         q = q.force_encoding('utf-8') if q.respond_to?(:force_encoding)
 
@@ -61,11 +61,11 @@ class Mamemose::Server
           end
         end
 
-        title = "Search #{q} in #{docpath(query['path'])}"
+        title = "Search #{q} in #{showpath(query['path'])}"
         title = title.force_encoding('utf-8') if title.respond_to?(:force_encoding)
         body = title + "\n====\n"
         found.reject{|key, value| value == []}.sort.each do |key, value|
-          body += "\n### in <a href='#{uri(key)}'>#{uri(key)}\n"
+          body += "\n### in <a href='#{uri(key)}'>#{escape(uri(key))}</a>\n"
           value.each do |v|
             body += link_list(v[0], v[1])
           end
@@ -76,10 +76,10 @@ class Mamemose::Server
 
       else
 
-        filename = path(req.path)
+        filename = fullpath(req.path)
 
         if File.directory?(filename) then
-          title = "Index of #{docpath(req.path)}"
+          title = "Index of #{showpath(req.path)}"
           body = title + "\n====\n"
 
           recent = []
@@ -96,7 +96,8 @@ class Mamemose::Server
             recent = recent.map{|file|
               if markdown?(file) then
                 [get_title(file, open(file).read), uri(file)]
-              else [File::basename(file), uri(file)]
+              else
+                [escaped_basename(file), uri(file)]
               end
             }
           else
@@ -106,14 +107,14 @@ class Mamemose::Server
           Dir.entries(filename).each do |i|
             next if ignore?(i)
             link = uri(File.join(filename, i))
-            if File.directory?(path(link)) then
-              dirs << [File.basename(link) + File::SEPARATOR, link]
+            if File.directory?(fullpath(link)) then
+              dirs << [escaped_basename(link) + File::SEPARATOR, link]
             elsif markdown?(link)
-              File.open(path(link)) do |f|
+              File.open(fullpath(link)) do |f|
                 markdowns << [get_title(link, f.read), link]
               end
             else
-              files << [File::basename(link), link]
+              files << [escaped_basename(link), link]
             end
           end
 
@@ -137,7 +138,7 @@ class Mamemose::Server
             if markdown?(req.path)
               str = file.read
               title = get_title(filename, str)
-              res.body = header_html(title, req.path) + markdown(str) + footer_html(path(req.path))
+              res.body = header_html(title, req.path) + markdown(str) + footer_html(fullpath(req.path))
               res.content_type = CONTENT_TYPE
             else
               res.body = file.read
@@ -277,7 +278,7 @@ HTML
       link_str += File::SEPARATOR + "<a href='#{uri}'>#{s}</a>"
     end
     link_str +=  " <a class='filename' href=\"javascript:copy('#{docpath(uri)}');\">[copy]</a>"
-    uri.gsub!('/'+File::basename(uri), "") if File.file?(path(uri))
+    uri.gsub!('/'+File::basename(uri), "") if File.file?(fullpath(uri))
     link_str = "<a href='/'>#{DOCUMENT_ROOT}</a>" + link_str
     search_form = <<HTML
 <form action="/search" method="get">
@@ -303,27 +304,41 @@ HTML
     return html
   end
 
+  # returns escaped characters so that the markdown parser doesn't interpret it has special meaning.
   def escape(text)
-    return text.gsub(/[\`*_{}\[\]()#+-.!]/, "\\\\\\0")
+    return text.gsub(/[\`*_{}\[\]()#+\-.!]/, "\\\\\\0")
   end
 
+  # returns /-rooted path. eg. /path/to/my_document.md
   def uri(path)
     s = File::expand_path(path).gsub(DIR, "").gsub(File::SEPARATOR, '/')
     return s == '' ? '/' : s
   end
 
-  def path(uri)
+  # returns fullpath. eg. /home/daimatz/Dropbox/memo/path/to/my_document.md
+  def fullpath(uri)
     return File.join(DIR, uri.gsub('/', File::SEPARATOR))
   end
 
+  # returns DOCUMENT_ROOT-rooted path. eg. ~/Dropbox/memo/path/to/my_document.md
   def docpath(uri)
     return File.join(DOCUMENT_ROOT, uri.gsub('/', File::SEPARATOR)).gsub(/#{File::SEPARATOR}$/, "")
   end
 
+  # returns DOCUMENT_ROOT-rooted path, but escaped.  eg. ~/Dropbox/memo/path/to/my\_document.md
+  # used in user-viewable (HTML) context.
+  def showpath(uri)
+    return escape(docpath(uri))
+  end
+
+  def escaped_basename(filename)
+    return escape(File::basename(filename))
+  end
+
   def link_list(title, link)
-    file = path(link)
+    file = fullpath(link)
     str = File.file?(file) ? sprintf("%.1fKB", File.size(file) / 1024.0) : "dir"
-    return "- [#{title}](#{link}) <a class='filename' href=\"javascript:copy('#{docpath(link)}');\">[#{escape(File.basename(link))}, #{str}]</a>\n"
+    return "- [#{title}](#{link}) <a class='filename' href=\"javascript:copy('#{docpath(link)}');\">[#{escaped_basename(link)}, #{str}]</a>\n"
   end
 
   def markdown?(file)
@@ -340,9 +355,9 @@ HTML
   end
 
   def get_title(filename, str="")
-    return File::basename(filename) if !markdown?(filename)
+    return escaped_basename(filename) if !markdown?(filename)
     title = str.split(/$/)[0]
-    return title =~ /^\s*$/ ? File::basename(filename) : title
+    return title =~ /^\s*$/ ? escaped_basename(filename) : title
   end
 
   def markdown(text)
