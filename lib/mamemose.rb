@@ -259,6 +259,12 @@ footer {
     text-align: right;
     margin: 5em 0 1em;
 }
+blockquote {
+    margin: 1em 3em;
+    border: 2px solid #999;
+    padding: 0.3em 0;
+    background-color: #f3fff3;
+}
 --></style>
 <script>
 function copy(text) {
