@@ -41,7 +41,7 @@ class Mamemose::Server
       res['Cache-Control'] = 'no-cache, no-store, must-revalidate'
       res['Pragma'] = 'no-cache'
       res['Expires'] = '0'
-      if req.path =~ /^\/search/
+      if req.path =~ /^\/search\?/
         query = req.query
         path = fullpath(query["path"])
         q = URI.decode(query["q"])
