@@ -202,7 +202,11 @@ HTML
 
   def footer_html(filepath=nil)
     if filepath
-      updated = filepath + " [#{filesize(filepath)}]" + " / Last Updated: " + File.mtime(filepath).strftime("%Y-%m-%d %H:%M:%S") + " / "
+      updated = File.basename(filepath)\
+              + " [#{filesize(filepath)}]"\
+              + " / Last Updated: "\
+              + File.mtime(filepath).strftime("%Y-%m-%d %H:%M:%S")\
+              + " / "
     else
       updated = ""
     end
@@ -408,7 +412,7 @@ HTML
   def indexfile(dir)
     Dir.entries(dir).each do |f|
       if f =~ INDEX_PATTERN && markdown?(f)
-        return f
+        return dir + File::SEPARATOR + f
       end
     end
     return nil
