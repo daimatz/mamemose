@@ -24,6 +24,7 @@ CUSTOM_FOOTER = '' if !defined?(CUSTOM_FOOTER)
 
 CONTENT_TYPE = "text/html; charset=utf-8"
 DIR = File::expand_path(DOCUMENT_ROOT, '/')
+INDEX_PATTERN = /^README/i
 
 class HTMLwithSyntaxHighlighter < Redcarpet::Render::XHTML
   def block_code(code, lang)
@@ -130,7 +131,12 @@ class Mamemose::Server
           body += "\nOther files:\n----\n"
           files.each {|i| body += link_list(i[0], i[1])}
 
-          res.body = header_html(title, req.path) + markdown(body) + footer_html
+          if index = indexfile(filename)
+            body += "\n\n"
+            body += File.read(index)
+          end
+
+          res.body = header_html(title, req.path) + markdown(body) + footer_html(index)
           res.content_type = CONTENT_TYPE
 
         elsif File.exists?(filename)
@@ -265,6 +271,11 @@ blockquote {
     padding: 0.3em 0;
     background-color: #f3fff3;
 }
+hr {
+    height: 1px;
+    border: none;
+    border-top: 1px solid black;
+}
 --></style>
 <script>
 function copy(text) {
@@ -297,7 +308,7 @@ HTML
   end
 
   def footer_html(filepath=nil)
-    updated = filepath ? "Last Updated: " + File.mtime(filepath).strftime("%Y-%m-%d %H:%M:%S") + " / " : ""
+    updated = filepath ? "#{filepath} / Last Updated: " + File.mtime(filepath).strftime("%Y-%m-%d %H:%M:%S") + " / " : ""
     html = <<HTML
 #{CUSTOM_FOOTER}
 <footer>
@@ -364,6 +375,15 @@ HTML
     return escaped_basename(filename) if !markdown?(filename)
     title = str.split(/$/)[0]
     return title =~ /^\s*$/ ? escaped_basename(filename) : title
+  end
+
+  def indexfile(dir)
+    Dir.entries(dir).each do |f|
+      if f =~ INDEX_PATTERN && markdown?(f)
+        return f
+      end
+    end
+    return nil
   end
 
   def markdown(text)
