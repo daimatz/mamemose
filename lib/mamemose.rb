@@ -18,13 +18,13 @@ IGNORE_FILES = ['.DS_Store','.AppleDouble','.LSOverride','Icon',/^\./,/~$/,
                 '.Spotlight-V100','.Trashes','Thumbs.db','ehthumbs.db',
                 'Desktop.ini','$RECYCLE.BIN',/^#/,'MathJax','syntaxhighlighter'] if !defined?(IGNORE_FILES)
 MARKDOWN_PATTERN = /\.(md|markdown)$/ if !defined?(MARKDOWN_PATTERN)
+INDEX_PATTERN = /^README/i
 CUSTOM_HEADER = '' if !defined?(CUSTOM_HEADER)
 CUSTOM_BODY = '' if !defined?(CUSTOM_BODY)
 CUSTOM_FOOTER = '' if !defined?(CUSTOM_FOOTER)
 
 CONTENT_TYPE = "text/html; charset=utf-8"
 DIR = File::expand_path(DOCUMENT_ROOT, '/')
-INDEX_PATTERN = /^README/i
 
 class HTMLwithSyntaxHighlighter < Redcarpet::Render::XHTML
   def block_code(code, lang)
@@ -41,109 +41,15 @@ class Mamemose::Server
       res['Cache-Control'] = 'no-cache, no-store, must-revalidate'
       res['Pragma'] = 'no-cache'
       res['Expires'] = '0'
+
       if req.path =~ /^\/search/
-        query = req.query
-        path = fullpath(query["path"])
-        q = URI.decode(query["q"])
-        q = q.force_encoding('utf-8') if q.respond_to?(:force_encoding)
-
-        found = find(path, q)
-
-        title = "Search #{q} in #{showpath(query['path'])}"
-        title = title.force_encoding('utf-8') if title.respond_to?(:force_encoding)
-        body = title + "\n====\n"
-        found.reject{|key, value| value == []}.sort.each do |key, value|
-          body += "\n### in <a href='#{uri(key)}'>#{escape(uri(key))}</a>\n"
-          value.each do |v|
-            body += link_list(v[0], v[1])
-          end
-        end
-
-        res.body = header_html(title, uri(path), q) + markdown(body) + footer_html
-        res.content_type = CONTENT_TYPE
-
+        res = req_search(req, res)
+      elsif File.directory?(fullpath(req.path)) then
+        res = req_index(req, res)
+      elsif File.exists?(fullpath(req.path))
+        res = req_file(req, res)
       else
-
-        filename = fullpath(req.path)
-
-        if File.directory?(filename) then
-          title = "Index of #{showpath(req.path)}"
-          body = title + "\n====\n"
-
-          recent = []
-          dirs = []
-          markdowns = []
-          files = []
-
-          if RECENT_NUM > 0 then
-            Find.find(filename) do |file|
-              Find.prune if ignore?(file)
-              recent << file if File.file?(file) && file =~ RECENT_PATTERN
-            end
-            recent = recent.sort_by{|file| File.mtime(file)}.reverse.slice(0,RECENT_NUM)
-            recent = recent.map{|file|
-              if markdown?(file) then
-                [get_title(file, open(file).read), uri(file)]
-              else
-                [escaped_basename(file), uri(file)]
-              end
-            }
-          else
-            recent = []
-          end
-
-          Dir.entries(filename).each do |i|
-            next if ignore?(i)
-            link = uri(File.join(filename, i))
-            if File.directory?(fullpath(link)) then
-              dirs << [escaped_basename(link) + File::SEPARATOR, link]
-            elsif markdown?(link)
-              File.open(fullpath(link)) do |f|
-                markdowns << [get_title(link, f.read), link]
-              end
-            else
-              files << [escaped_basename(link), link]
-            end
-          end
-
-          body += "\nRecent:\n---\n" if RECENT_NUM > 0
-          recent.each {|i| body += link_list(i[0], i[1])}
-
-          body += "\nDirectories:\n----\n"
-          dirs.each {|i| body += link_list(i[0], i[1])}
-
-          body += "\nMarkdown documents:\n----\n"
-          markdowns.each {|i| body += link_list(i[0], i[1])}
-
-          body += "\nOther files:\n----\n"
-          files.each {|i| body += link_list(i[0], i[1])}
-
-          if index = indexfile(filename)
-            body += "\n\n"
-            body += File.read(index)
-          end
-
-          res.body = header_html(title, req.path) + markdown(body) + footer_html(index)
-          res.content_type = CONTENT_TYPE
-
-        elsif File.exists?(filename)
-          open(filename) do |file|
-            if markdown?(req.path)
-              str = file.read
-              title = get_title(filename, str)
-              res.body = header_html(title, req.path) + markdown(str) + footer_html(fullpath(req.path))
-              res.content_type = CONTENT_TYPE
-            else
-              res.body = file.read
-              res.content_type = WEBrick::HTTPUtils.mime_type(req.path, WEBrick::HTTPUtils::DefaultMimeTypes)
-              res.content_length = File.stat(filename).size
-            end
-          end
-
-        else
-          res.status = WEBrick::HTTPStatus::RC_NOT_FOUND
-        end
-
+        res.status = WEBrick::HTTPStatus::RC_NOT_FOUND
       end
     end
 
@@ -312,6 +218,74 @@ HTML
     return html
   end
 
+  def req_search(req, res)
+    query = req.query
+    path = fullpath(query["path"])
+    q = URI.decode(query["q"])
+    q = q.force_encoding('utf-8') if q.respond_to?(:force_encoding)
+
+    found = find(path, q)
+
+    title = "Search #{q} in #{showpath(query['path'])}"
+    title = title.force_encoding('utf-8') if title.respond_to?(:force_encoding)
+    body = title + "\n====\n"
+    found.reject{|key, value| value == []}.sort.each do |key, value|
+      body += "\n### in <a href='#{uri(key)}'>#{escape(uri(key))}</a>\n"
+      value.each {|v| body += link_list(v[0], v[1])}
+    end
+
+    res.body = header_html(title, uri(path), q) + markdown(body) + footer_html
+    res.content_type = CONTENT_TYPE
+    return res
+  end
+
+  def req_index(req, res)
+    directory = fullpath(req.path)
+    title = "Index of #{showpath(req.path)}"
+    body = title + "\n====\n"
+
+    recent = recent_files(directory)
+    fs = directory_files(directory)
+
+    body += "\nRecent:\n---\n" if RECENT_NUM > 0
+    recent.each {|i| body += link_list(i[0], i[1])}
+
+    body += "\nDirectories:\n----\n"
+    fs[:dirs].each {|i| body += link_list(i[0], i[1])}
+
+    body += "\nMarkdown documents:\n----\n"
+    fs[:markdowns].each {|i| body += link_list(i[0], i[1])}
+
+    body += "\nOther files:\n----\n"
+    fs[:others].each {|i| body += link_list(i[0], i[1])}
+
+    if index = indexfile(directory)
+      body += "\n\n"
+      body += File.read(index)
+    end
+
+    res.body = header_html(title, req.path) + markdown(body) + footer_html(index)
+    res.content_type = CONTENT_TYPE
+    return res
+  end
+
+  def req_file(req, res)
+    filename = fullpath(req.path)
+    open(filename) do |file|
+      if markdown?(req.path)
+        str = file.read
+        title = get_title(filename, str)
+        res.body = header_html(title, req.path) + markdown(str) + footer_html(fullpath(req.path))
+        res.content_type = CONTENT_TYPE
+      else
+        res.body = file.read
+        res.content_type = WEBrick::HTTPUtils.mime_type(req.path, WEBrick::HTTPUtils::DefaultMimeTypes)
+        res.content_length = File.stat(filename).size
+      end
+    end
+    return res
+  end
+
   def find(directory, query)
     found = {}
     Find.find(directory) do |file|
@@ -328,6 +302,47 @@ HTML
       end
     end
     return found
+  end
+
+  def recent_files(directory)
+    recent = []
+    if RECENT_NUM > 0 then
+      Find.find(directory) do |file|
+        Find.prune if ignore?(file)
+        recent << file if File.file?(file) && file =~ RECENT_PATTERN
+      end
+      recent = recent.sort_by{|file| File.mtime(file)}.reverse.slice(0,RECENT_NUM)
+      recent = recent.map{|file|
+        if markdown?(file) then
+          [get_title(file, open(file).read), uri(file)]
+        else
+          [escaped_basename(file), uri(file)]
+        end
+      }
+    else
+      recent = []
+    end
+    return recent
+  end
+
+  def directory_files(directory)
+    dirs = []
+    markdowns = []
+    others = []
+    Dir.entries(directory).each do |i|
+      next if ignore?(i)
+      link = uri(File.join(directory, i))
+      if File.directory?(fullpath(link)) then
+        dirs << [escaped_basename(link) + File::SEPARATOR, link]
+      elsif markdown?(link)
+        File.open(fullpath(link)) do |f|
+          markdowns << [get_title(link, f.read), link]
+        end
+      else
+        others << [escaped_basename(link), link]
+      end
+    end
+    return {:dirs=>dirs, :markdowns=>markdowns, :others=>others}
   end
 
   # returns escaped characters so that the markdown parser doesn't interpret it has special meaning.
