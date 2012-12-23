@@ -85,6 +85,10 @@ http://localhost:PORT/
     - ポート。 http://localhost:PORT/ にアクセス。デフォルトは 20000
 - `MARKDOWN_PATTERN`
     - Markdown ドキュメントと見なすファイルパターンを正規表現で。デフォルトは `/\.(md|markdown)$/`
+- `INDEX_PATTERN`
+    - 一覧ページ表示時に自動的に読み込むファイルパターンを正規表現で。
+      これにマッチするファイルは1つのディレクトリに複数置かないほうがいいです。
+      デフォルトは `/^README/`
 - `RECENT_NUM`
     - 「最近更新したファイル」を表示する数。デフォルトは 10
 - `RECENT_PATTERN`
