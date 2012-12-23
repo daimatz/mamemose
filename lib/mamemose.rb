@@ -308,7 +308,11 @@ HTML
   end
 
   def footer_html(filepath=nil)
-    updated = filepath ? "#{filepath} / Last Updated: " + File.mtime(filepath).strftime("%Y-%m-%d %H:%M:%S") + " / " : ""
+    if filepath
+      updated = filepath + " [#{filesize(filepath)}]" + " / Last Updated: " + File.mtime(filepath).strftime("%Y-%m-%d %H:%M:%S") + " / "
+    else
+      updated = ""
+    end
     html = <<HTML
 #{CUSTOM_FOOTER}
 <footer>
@@ -354,8 +358,12 @@ HTML
 
   def link_list(title, link)
     file = fullpath(link)
-    str = File.file?(file) ? sprintf("%.1fKB", File.size(file) / 1024.0) : "dir"
+    str = filesize(file)
     return "- [#{title}](#{link}) <a class='filename' href=\"javascript:copy('#{docpath(link)}');\">[#{escaped_basename(link)}, #{str}]</a>\n"
+  end
+
+  def filesize(file)
+    File.file?(file) ? sprintf("%.1fKB", File.size(file) / 1024.0) : "dir"
   end
 
   def markdown?(file)
