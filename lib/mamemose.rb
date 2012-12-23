@@ -41,26 +41,13 @@ class Mamemose::Server
       res['Cache-Control'] = 'no-cache, no-store, must-revalidate'
       res['Pragma'] = 'no-cache'
       res['Expires'] = '0'
-      if req.path =~ /^\/search\?/
+      if req.path =~ /^\/search/
         query = req.query
         path = fullpath(query["path"])
         q = URI.decode(query["q"])
         q = q.force_encoding('utf-8') if q.respond_to?(:force_encoding)
 
-        found = {}
-        Find.find(path) do |file|
-          Find.prune if ignore?(file)
-          dir = File::dirname(file)
-          found[dir] = [] if !found[dir]
-          if markdown?(file)
-            open(file) do |f|
-              c = f.read + "\n" + file
-              found[dir] << [get_title(file,c), uri(file)] if !q.split(' ').map{|s| /#{s}/mi =~ c }.include?(nil)
-            end
-          elsif !q.split(' ').map{|s| /#{s}/ =~ File.basename(file)}.include?(nil)
-            found[dir] << [get_title(file),uri(file)]
-          end
-        end
+        found = find(path, q)
 
         title = "Search #{q} in #{showpath(query['path'])}"
         title = title.force_encoding('utf-8') if title.respond_to?(:force_encoding)
@@ -323,6 +310,24 @@ HTML
 </html>
 HTML
     return html
+  end
+
+  def find(directory, query)
+    found = {}
+    Find.find(directory) do |file|
+      Find.prune if ignore?(file)
+      dir = File::dirname(file)
+      found[dir] = [] if !found[dir]
+      if markdown?(file)
+        open(file) do |f|
+          c = f.read + "\n" + file
+          found[dir] << [get_title(file,c), uri(file)] if !query.split(' ').map{|s| /#{s}/mi =~ c }.include?(nil)
+        end
+      elsif !query.split(' ').map{|s| /#{s}/ =~ File.basename(file)}.include?(nil)
+        found[dir] << [get_title(file),uri(file)]
+      end
+    end
+    return found
   end
 
   # returns escaped characters so that the markdown parser doesn't interpret it has special meaning.
