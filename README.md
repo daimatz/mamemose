@@ -18,6 +18,7 @@ mamemose: Markdown memo server
 環境
 ----
 
+- Ruby 製
 - おもに Mac OS X 10.8 上の Ruby 1.9.3 でテスト
 - Ruby 1.8.7 でも動くようにした
 - Linux はおそらく大丈夫
@@ -45,7 +46,7 @@ $ gem install mamemose
 $ mamemose &> /dev/null &
 ```
 
-ブラウザから
+ローカルで HTTP サーバが立ち上がります。その後ブラウザから
 
 ```
 http://localhost:PORT/
