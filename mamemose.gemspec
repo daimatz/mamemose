@@ -17,4 +17,5 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency "redcarpet", ">= 2.2.0"
   gem.add_dependency "htmlentities", ">= 4.3.0"
+  gem.add_dependency "thor"
 end

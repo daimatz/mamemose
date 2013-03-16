@@ -4,4 +4,22 @@ $:.unshift File.expand_path("../../lib", __FILE__)
 
 load 'mamemose.rb'
 
-Mamemose::Server.new.start
+require 'rubygems'
+require 'thor'
+
+class Mamemose::CLI < Thor
+  desc "server", "run the mamemose server"
+  def server
+    Mamemose::Server.new.start
+  end
+
+  desc "s", "alias of server"
+  alias :s :server
+
+  desc "version", "print version"
+  def version
+    puts Mamemose::VERSION
+  end
+end
+
+Mamemose::CLI.start
