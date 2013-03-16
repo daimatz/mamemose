@@ -30,4 +30,5 @@ class Mamemose::CLI < Thor
   end
 end
 
-Mamemose::CLI.start
+args = ARGV == [] ? ["s"] : ARGV
+Mamemose::CLI.start(args)
