@@ -35,8 +35,13 @@ class HTMLwithSyntaxHighlighter < Redcarpet::Render::XHTML
 end
 
 class Mamemose::Server
-  def initialize
-    @server = WEBrick::HTTPServer.new({ :Port => PORT })
+  def initialize(port)
+    @server = WEBrick::HTTPServer.new({ :Port => port ? port.to_i : PORT })
+    trap(:INT){@server.shutdown}
+    trap(:TERM){@server.shutdown}
+  end
+
+  def start
     @server.mount_proc('/') do |req, res|
       res['Cache-Control'] = 'no-cache, no-store, must-revalidate'
       res['Pragma'] = 'no-cache'
@@ -47,23 +52,30 @@ class Mamemose::Server
       elsif File.directory?(fullpath(req.path)) then
         res = req_index(req, res)
       elsif File.exists?(fullpath(req.path))
-        res = req_file(req, res)
+        res = req_file(fullpath(req.path), res, false)
       else
         res.status = WEBrick::HTTPStatus::RC_NOT_FOUND
       end
     end
 
-    trap(:INT){@server.shutdown}
-    trap(:TERM){@server.shutdown}
+    @server.start
   end
 
-  def start
+  def file(filename)
+    @server.mount_proc('/') do |req, res|
+      res['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+      res['Pragma'] = 'no-cache'
+      res['Expires'] = '0'
+      res = req_file(File.absolute_path(filename), res, true)
+      res.content_type = CONTENT_TYPE
+    end
+
     @server.start
   end
 
 private
 
-  def header_html(title, path, q="")
+  def header_html(title, path)
     html = <<HTML
 <!DOCTYPE HTML>
 <html>
@@ -214,6 +226,10 @@ function copy(text) {
 <body>
 #{CUSTOM_BODY}
 HTML
+    return html
+  end
+
+  def search_form(path, q="")
     link_str = ""
     uri = ""
     path.split('/').each do |s|
@@ -231,7 +247,7 @@ HTML
 <input type="submit" value="search" />
 </form>
 HTML
-    return html + "<div id=\"header\">#{link_str}#{search_form}</div>"
+    return "<div id=\"header\">#{link_str}#{search_form}</div>"
   end
 
   def footer_html(filepath=nil)
@@ -272,7 +288,10 @@ HTML
       value.each {|v| body += link_list(v[0], v[1])}
     end
 
-    res.body = header_html(title, uri(path), q) + markdown(body) + footer_html
+    res.body = header_html(title, uri(path))\
+             + search_form(uri(path), q)\
+             + markdown(body)\
+             + footer_html
     res.content_type = CONTENT_TYPE
     return res
   end
@@ -302,22 +321,27 @@ HTML
       body += File.read(index)
     end
 
-    res.body = header_html(title, req.path) + markdown(body) + footer_html(index)
+    res.body = header_html(title, req.path)\
+             + search_form(uri(req.path))\
+             + markdown(body)\
+             + footer_html(index)
     res.content_type = CONTENT_TYPE
     return res
   end
 
-  def req_file(req, res)
-    filename = fullpath(req.path)
+  def req_file(filename, res, fileonly)
     open(filename) do |file|
-      if markdown?(req.path)
+      if markdown?(filename)
         str = file.read
         title = get_title(filename, str)
-        res.body = header_html(title, req.path) + markdown(str) + footer_html(fullpath(req.path))
+        body = header_html(title, filename)
+        body += search_form(uri(filename)) if !fileonly
+        body += markdown(str) + footer_html(filename)
+        res.body = body
         res.content_type = CONTENT_TYPE
       else
         res.body = file.read
-        res.content_type = WEBrick::HTTPUtils.mime_type(req.path, WEBrick::HTTPUtils::DefaultMimeTypes)
+        res.content_type = WEBrick::HTTPUtils.mime_type(filename, WEBrick::HTTPUtils::DefaultMimeTypes)
         res.content_length = File.stat(filename).size
       end
     end

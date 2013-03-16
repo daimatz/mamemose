@@ -9,8 +9,16 @@ require 'thor'
 
 class Mamemose::CLI < Thor
   desc "server", "run the mamemose server"
-  def server
-    Mamemose::Server.new.start
+  desc "server filename port", "run the mamemose server for specified file"
+  def server(filename=nil, port=nil)
+    mamemose = Mamemose::Server.new(port)
+    if !filename && !port
+      mamemose.start
+    elsif filename && port
+      mamemose.file(filename)
+    else
+      puts "please specify filename and port"
+    end
   end
 
   desc "s", "alias of server"
