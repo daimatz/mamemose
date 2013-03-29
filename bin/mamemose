@@ -13,7 +13,7 @@ class Mamemose::CLI < Thor
   def server(filename=nil, port=nil)
     mamemose = Mamemose::Server.new(port)
     if !filename && !port
-      mamemose.start
+      mamemose.server
     elsif filename && port
       mamemose.file(filename)
     else

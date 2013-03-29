@@ -5,26 +5,11 @@ require 'uri'
 require 'redcarpet'
 require 'htmlentities'
 
-require "mamemose/version"
+require 'mamemose/version'
 
-conf = File.expand_path("~" + File::SEPARATOR + ".mamemose.rb")
-load conf if File.exists?(conf)
+require 'mamemose/path'
 
-DOCUMENT_ROOT = "~/Dropbox/memo" if !defined?(DOCUMENT_ROOT)
-PORT = 20000 if !defined?(PORT)
-RECENT_NUM = 10 if !defined?(RECENT_NUM)
-RECENT_PATTERN = /.*/ if !defined?(RECENT_PATTERN)
-IGNORE_FILES = ['.DS_Store','.AppleDouble','.LSOverride','Icon',/^\./,/~$/,
-                '.Spotlight-V100','.Trashes','Thumbs.db','ehthumbs.db',
-                'Desktop.ini','$RECYCLE.BIN',/^#/,'MathJax','syntaxhighlighter'] if !defined?(IGNORE_FILES)
-MARKDOWN_PATTERN = /\.(md|markdown)$/ if !defined?(MARKDOWN_PATTERN)
-INDEX_PATTERN = /^README/i if !defined?(INDEX_PATTERN)
-CUSTOM_HEADER = '' if !defined?(CUSTOM_HEADER)
-CUSTOM_BODY = '' if !defined?(CUSTOM_BODY)
-CUSTOM_FOOTER = '' if !defined?(CUSTOM_FOOTER)
-
-CONTENT_TYPE = "text/html; charset=utf-8"
-DIR = File::expand_path(DOCUMENT_ROOT, '/')
+require 'mamemose/env'
 
 class HTMLwithSyntaxHighlighter < Redcarpet::Render::XHTML
   def block_code(code, lang)
@@ -35,21 +20,28 @@ class HTMLwithSyntaxHighlighter < Redcarpet::Render::XHTML
 end
 
 class Mamemose::Server
+  include Mamemose::Path
+
   def initialize(port)
-    @server = WEBrick::HTTPServer.new({ :Port => port ? port.to_i : PORT })
-    trap(:INT){@server.shutdown}
-    trap(:TERM){@server.shutdown}
+    @mamemose = WEBrick::HTTPServer.new({ :Port => port ? port.to_i : PORT })
+    trap(:INT){finalize}
+    trap(:TERM){finalize}
   end
 
   def start
-    @server.mount_proc('/') do |req, res|
+    @mamemose.start
+  end
+
+  def server
+    @mamemose.mount_proc('/') do |req, res|
       res['Cache-Control'] = 'no-cache, no-store, must-revalidate'
       res['Pragma'] = 'no-cache'
       res['Expires'] = '0'
 
+      p fullpath(req.path)
       if req.path =~ /^\/search/
         res = req_search(req, res)
-      elsif File.directory?(fullpath(req.path)) then
+      elsif File.directory?(fullpath(req.path))
         res = req_index(req, res)
       elsif File.exists?(fullpath(req.path))
         res = req_file(fullpath(req.path), res, false)
@@ -57,23 +49,26 @@ class Mamemose::Server
         res.status = WEBrick::HTTPStatus::RC_NOT_FOUND
       end
     end
-
-    @server.start
+    start
   end
 
   def file(filename)
-    @server.mount_proc('/') do |req, res|
+    @mamemose.mount_proc('/') do |req, res|
       res['Cache-Control'] = 'no-cache, no-store, must-revalidate'
       res['Pragma'] = 'no-cache'
       res['Expires'] = '0'
       res = req_file(File.absolute_path(filename), res, true)
       res.content_type = CONTENT_TYPE
     end
-
-    @server.start
+    start
   end
 
 private
+
+  def finalize
+    Thread::list.each {|t| Thread::kill(t) if t != Thread::current}
+    @mamemose.shutdown
+  end
 
   def header_html(title, path)
     html = <<HTML
@@ -405,37 +400,6 @@ HTML
       end
     end
     return {:dirs=>dirs, :markdowns=>markdowns, :others=>others}
-  end
-
-  # returns escaped characters so that the markdown parser doesn't interpret it has special meaning.
-  def escape(text)
-    return text.gsub(/[\`*_{}\[\]()#+\-.!]/, "\\\\\\0")
-  end
-
-  # returns /-rooted path. eg. /path/to/my_document.md
-  def uri(path)
-    s = File::expand_path(path).gsub(DIR, "").gsub(File::SEPARATOR, '/')
-    return s == '' ? '/' : s
-  end
-
-  # returns fullpath. eg. /home/daimatz/Dropbox/memo/path/to/my_document.md
-  def fullpath(uri)
-    return File.join(DIR, uri.gsub('/', File::SEPARATOR))
-  end
-
-  # returns DOCUMENT_ROOT-rooted path. eg. ~/Dropbox/memo/path/to/my_document.md
-  def docpath(uri)
-    return File.join(DOCUMENT_ROOT, uri.gsub('/', File::SEPARATOR)).gsub(/#{File::SEPARATOR}$/, "")
-  end
-
-  # returns DOCUMENT_ROOT-rooted path, but escaped.  eg. ~/Dropbox/memo/path/to/my\_document.md
-  # used in user-viewable (HTML) context.
-  def showpath(uri)
-    return escape(docpath(uri))
-  end
-
-  def escaped_basename(filename)
-    return escape(File::basename(filename))
   end
 
   def link_list(title, link)
