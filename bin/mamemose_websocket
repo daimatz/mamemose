@@ -1,0 +1,27 @@
+#!/usr/bin/env ruby
+
+$:.unshift File.expand_path("../../lib", __FILE__)
+
+load 'mamemose/websocket.rb'
+
+require 'rubygems'
+require 'thor'
+
+class Mamemose::WebSocket::CLI < Thor
+  desc "server", "run the mamemose websocket server"
+  def server
+    ws = Mamemose::WebSocket::Server.new
+    ws.start
+  end
+
+  desc "s", "alias of server"
+  alias :s :server
+
+  desc "version", "print version"
+  def version
+    puts Mamemose::WebSocket::VERSION
+  end
+end
+
+args = ARGV == [] ? ["s"] : ARGV
+Mamemose::WebSocket::CLI.start(args)
