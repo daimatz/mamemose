@@ -1,6 +1,7 @@
 conf = File.expand_path("~" + File::SEPARATOR + ".mamemose.rb")
 load conf if File.exists?(conf)
 
+HOST= 'localhost' if !defined?(HOST)
 DOCUMENT_ROOT = "~/Dropbox/memo" if !defined?(DOCUMENT_ROOT)
 PORT = 20000 if !defined?(PORT)
 WS_PORT = 30000 if !defined?(WS_PORT)

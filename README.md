@@ -125,10 +125,12 @@ $ mamemose s /path/to/file 8000
 設定項目は以下の通りで、
 設定されなかったらデフォルト値を使います。
 
+- `HOST`
+    - mamemose サーバを立てるホスト名または IP。デフォルトは `localhost`
 - `DOCUMENT_ROOT`
     - ドキュメントルート。デフォルトは `~/Dropbox/memo`
 - `PORT`
-    - ポート。 http://localhost:PORT/ にアクセス。デフォルトは 20000
+    - mamemose ポート。 http://localhost:PORT/ にアクセス。デフォルトは 20000
 - `WS_PORT`
     - WebSocket サーバのポート。デフォルトは 30000
 - `MARKDOWN_PATTERN`

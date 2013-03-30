@@ -219,7 +219,7 @@ function copy(text) {
 <script>
 (function(){
   var fullpath = "#{fullpath}";
-  ws = new WebSocket("ws://localhost:#{WS_PORT}");
+  ws = new WebSocket("ws://#{HOST}:#{WS_PORT}");
   ws.onopen = function() {
     console.log("WebSocket (port=#{WS_PORT}) connected: " + fullpath);
     ws.send(fullpath);
