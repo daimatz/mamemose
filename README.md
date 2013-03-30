@@ -284,6 +284,10 @@ FAQ と予想されるもの
     - Haskell 用のは書きました [gist](https://gist.github.com/3969549)
 - reStructuredText 対応して
     - Python で書いてください
+- 更新のとき自動でページ最下部に行ってほしい
+    - フッタのタグを `<footer id="footer">` としてあるので、
+      `http://host/path/to/document.md#footer` にアクセスして編集すると
+      更新のとき自動でページ最下部に行ってくれます。
 - 表、テーブル、 table を書きたいんだけど
     - **実は書けました。** 以下のようにします。
 
