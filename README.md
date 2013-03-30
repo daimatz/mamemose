@@ -182,18 +182,17 @@ RECENT_NUM = 0
 
 # すべてのページで MathJax が使えるように
 CUSTOM_HEADER = <<HEADER
-<script type="text/javascript"
-  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML">
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML">
 </script>
 HEADER
 
 # すべてのページで SyntaxHighlighter が使えるように
 host = "http://alexgorbatchev.com/pub/sh/current" # 変数も使えます
 CUSTOM_FOOTER = <<FOOTER
-<link href="#{host}/styles/shCoreDefault.css" rel="stylesheet" type="text/css" />
-<script src="#{host}/scripts/shCore.js" type="text/javascript"></script>
-<script src="#{host}/scripts/shAutoloader.js" type="text/javascript"></script>
-<script type="text/javascript">
+<link href="#{host}/styles/shCoreDefault.css" rel="stylesheet" />
+<script src="#{host}/scripts/shCore.js"></script>
+<script src="#{host}/scripts/shAutoloader.js"></script>
+<script>
 SyntaxHighlighter.autoloader(
 'AS3 as3 #{host}/scripts/shBrushAS3.js',
 'AppleScript applescript #{host}/scripts/shBrushAppleScript.js',
