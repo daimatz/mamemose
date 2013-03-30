@@ -50,7 +50,7 @@ $ gem install mamemose
 パスを通す必要があるかも。
 
 ```bash
-$ nohup mamemose &> /dev/null &
+$ mamemose &> /dev/null &
 ```
 
 するとローカルで HTTP サーバが立ち上がります。その後ブラウザから
@@ -80,7 +80,7 @@ mamemose サーバを立てた後アクセスされたファイルを監視し�
 以下のマンドを叩いて mamemose WebSocket サーバを起動しておいてください。
 
 ```bash
-$ nohup mamemose_websocket &> /dev/null &
+$ mamemose_websocket &> /dev/null &
 ```
 
 mamemose WebSocket サーバを立てなくても利用できます。
