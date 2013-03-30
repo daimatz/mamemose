@@ -86,6 +86,11 @@ $ nohup mamemose_websocket &> /dev/null &
 mamemose WebSocket サーバを立てなくても利用できます。
 その場合は手動で更新してください。
 
+#### 注意
+
+Ruby 1.8 では mamemose WebSocket が動かない可能性があります。
+というかもう 2.0 も出たんだしいい加減 1.8 滅べ。
+
 ### 一時ファイル閲覧
 
 一時的に `DOCUMENT_ROOT` で指定したディレクトリ以外にあるファイルを
@@ -124,6 +129,8 @@ $ mamemose s /path/to/file 8000
     - ドキュメントルート。デフォルトは `~/Dropbox/memo`
 - `PORT`
     - ポート。 http://localhost:PORT/ にアクセス。デフォルトは 20000
+- `WS_PORT`
+    - WebSocket サーバのポート。デフォルトは 30000
 - `MARKDOWN_PATTERN`
     - Markdown ドキュメントと見なすファイルパターンを正規表現で。デフォルトは `/\.(md|markdown)$/`
 - `INDEX_PATTERN`
