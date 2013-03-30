@@ -9,7 +9,6 @@ require 'mamemose/util'
 require 'mamemose/env'
 
 class Mamemose::WebSocket::Server
-  include Mamemose::Path
   include Mamemose::Util
 
   @@update_send_message = "updated"
@@ -32,14 +31,15 @@ class Mamemose::WebSocket::Server
         ws.send("connected.")
       }
 
-      ws.onmessage { |uri|
+      ws.onmessage { |fullpath|
         # receive url from client
-        if File.exists?(fullpath(uri))
+        debug(@tag, "receive: #{fullpath}")
+        if File.exists?(fullpath)
           # connections are managed as tuple of (socket, url, mtime_cache)
-          con = {:ws => ws, :uri => uri, :mtime_cache => get_mtime(uri)}
+          con = {:ws => ws, :fullpath => fullpath, :mtime_cache => get_mtime(fullpath)}
           @mutex.synchronize do
             @connections.push(con) unless @connections.index(con)
-            debug(@tag, "added path to watch: #{uri}. now watch #{uris.to_s}")
+            debug(@tag, "added path to watch: #{fullpath}. now watch #{fullpaths.to_s}")
           end
         end
       }
@@ -49,7 +49,7 @@ class Mamemose::WebSocket::Server
         # when a connection is closed, delete it from @connections
         @mutex.synchronize do
           @connections.delete_if { |con| con[:ws] == ws }
-          debug(@tag, "closed and removed path. now watch #{uris.to_s}")
+          debug(@tag, "closed and removed path. now watch #{fullpaths.to_s}")
         end
       }
     end
@@ -57,23 +57,23 @@ class Mamemose::WebSocket::Server
 
   def watcher
     loop do
-      # gather uris to watch using mutex
-      watch_uris = []
+      # gather paths to watch using mutex
+      watch_fullpaths = []
       @mutex.synchronize do
-        watch_uris = uris
+        watch_fullpaths = fullpaths
       end
 
-      # gather mtimes of watch_uris
+      # gather mtimes of watch_fullpaths
       mtimes = {}
-      watch_uris.uniq.each do |uri|
-        if File.exists?(fullpath(uri))
+      watch_fullpaths.uniq.each do |fullpath|
+        if File.exists?(fullpath)
           # get mtime
-          mtimes[uri] = get_mtime(uri)
+          mtimes[fullpath] = get_mtime(fullpath)
         else
           # file no longer exists. remove the entry
           @mutex.synchronize do
-            @connections.delete_if { |con| con[:uri] == uri }
-            debug(@tag, "detected deletion: #{uri} and updated the list. now watch #{uris.to_s}")
+            @connections.delete_if { |con| con[:fullpath] == fullpath }
+            debug(@tag, "detected deletion: #{fullpath} and updated the list. now watch #{fullpaths.to_s}")
           end
         end
       end
@@ -82,10 +82,10 @@ class Mamemose::WebSocket::Server
       to_notify = []
       @mutex.synchronize do
         @connections.each do |con|
-          uri = con[:uri]
-          if con[:mtime_cache] < mtimes[uri]
-            debug(@tag, "detected update: #{uri}. pushing...")
-            con[:mtime_cache] = mtimes[uri]
+          fullpath = con[:fullpath]
+          if mtimes[fullpath] && con[:mtime_cache] < mtimes[fullpath]
+            debug(@tag, "detected update: #{fullpath}. pushing...")
+            con[:mtime_cache] = mtimes[fullpath]
             to_notify << con
           end
         end
@@ -98,11 +98,11 @@ class Mamemose::WebSocket::Server
     end
   end
 
-  def uris
-    @connections.map{ |con| con[:uri] }
+  def fullpaths
+    @connections.map{ |con| con[:fullpath] }
   end
 
-  def get_mtime(uri)
-    File.mtime(fullpath(uri)) if File.exists?(fullpath(uri))
+  def get_mtime(fullpath)
+    File.mtime(fullpath) if File.exists?(fullpath)
   end
 end

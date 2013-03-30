@@ -12,7 +12,7 @@ module Mamemose::Path
 
   # returns fullpath. eg. /home/daimatz/Dropbox/memo/path/to/my_document.md
   def fullpath(uri)
-    return File.join(DIR, uri.gsub('/', File::SEPARATOR))
+    return File.join(DIR, uri.gsub(DIR, '').gsub('/', File::SEPARATOR))
   end
 
   # returns DOCUMENT_ROOT-rooted path. eg. ~/Dropbox/memo/path/to/my_document.md

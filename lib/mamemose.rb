@@ -70,7 +70,7 @@ private
     @mamemose.shutdown
   end
 
-  def header_html(title, path)
+  def header_html(title, fullpath)
     html = <<HTML
 <!DOCTYPE HTML>
 <html>
@@ -216,6 +216,23 @@ function copy(text) {
   prompt("Copy filepath below:", text);
 }
 </script>
+<script>
+(function(){
+  var fullpath = "#{fullpath}";
+  ws = new WebSocket("ws://localhost:#{WS_PORT}");
+  ws.onopen = function() {
+    console.log("WebSocket (port=#{WS_PORT}) connected: " + fullpath);
+    ws.send(fullpath);
+  };
+  ws.onmessage = function(evt) {
+    console.log("received: " + evt.data);
+    if (evt.data == "updated") {
+      console.log("update detected. reloading...");
+      location.reload();
+    }
+  };
+})();
+</script>
 #{CUSTOM_HEADER}
 </head>
 <body>
@@ -283,7 +300,7 @@ HTML
       value.each {|v| body += link_list(v[0], v[1])}
     end
 
-    res.body = header_html(title, uri(path))\
+    res.body = header_html(title, path)\
              + search_form(uri(path), q)\
              + markdown(body)\
              + footer_html
@@ -316,7 +333,7 @@ HTML
       body += File.read(index)
     end
 
-    res.body = header_html(title, req.path)\
+    res.body = header_html(title, directory)\
              + search_form(uri(req.path))\
              + markdown(body)\
              + footer_html(index)
