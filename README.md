@@ -50,7 +50,7 @@ $ gem install mamemose
 パスを通す必要があるかも。
 
 ```bash
-$ mamemose &> /dev/null &
+$ nohup mamemose &> /dev/null &
 ```
 
 するとローカルで HTTP サーバが立ち上がります。その後ブラウザから
@@ -68,6 +68,23 @@ http://localhost:PORT/
 - 一覧ページでは Markdown ドキュメントの1行目をタイトルとして読み込みます。
 - 文字コードは UTF-8 で書くようにしてください。
 - コマンドラインオプションは `mamemose help` で出ます。一応。
+
+
+### 自動更新
+
+WebSocket を使って自動更新できます。
+mamemose サーバを立てた後アクセスされたファイルを監視しておき、
+更新があればそのファイルを開いているブラウザのページを自動的にリロードします。
+
+現在のところ、 WebSocket 用のサーバを別に立てておくという設計になっています。
+以下のマンドを叩いて mamemose WebSocket サーバを起動しておいてください。
+
+```bash
+$ nohup mamemose_websocket &> /dev/null &
+```
+
+mamemose WebSocket サーバを立てなくても利用できます。
+その場合は手動で更新してください。
 
 ### 一時ファイル閲覧
 
