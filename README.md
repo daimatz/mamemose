@@ -132,7 +132,8 @@ $ mamemose s /path/to/file 8000
 - `PORT`
     - mamemose ポート。 http://localhost:PORT/ にアクセス。デフォルトは 20000
 - `WS_PORT`
-    - WebSocket サーバのポート。デフォルトは 30000
+    - WebSocket サーバのポート。
+      特に利用者から見えるわけではありませんが。デフォルトは 20001
 - `MARKDOWN_PATTERN`
     - Markdown ドキュメントと見なすファイルパターンを正規表現で。デフォルトは `/\.(md|markdown)$/`
 - `INDEX_PATTERN`

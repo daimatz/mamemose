@@ -4,7 +4,7 @@ load conf if File.exists?(conf)
 HOST= 'localhost' if !defined?(HOST)
 DOCUMENT_ROOT = "~/Dropbox/memo" if !defined?(DOCUMENT_ROOT)
 PORT = 20000 if !defined?(PORT)
-WS_PORT = 30000 if !defined?(WS_PORT)
+WS_PORT = 20001 if !defined?(WS_PORT)
 RECENT_NUM = 10 if !defined?(RECENT_NUM)
 RECENT_PATTERN = /.*/ if !defined?(RECENT_PATTERN)
 IGNORE_FILES = ['.DS_Store','.AppleDouble','.LSOverride','Icon',/^\./,/~$/,
