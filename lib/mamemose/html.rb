@@ -164,7 +164,7 @@ function copy(text) {
 </script>
 #{CUSTOM_HEADER}
 </head>
-<body>
+<body id="body">
 #{CUSTOM_BODY}
 HTML
     return html
@@ -203,7 +203,7 @@ HTML
     end
     html = <<HTML
 #{CUSTOM_FOOTER}
-<footer>
+<footer id="footer">
 #{updated}
 <a href="https://github.com/daimatz/mamemose">mamemose: Markdown memo server</a>
 </footer>
