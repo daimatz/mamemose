@@ -226,7 +226,7 @@ private
 
   def get_title(filename, str="")
     return escaped_basename(filename) if !markdown?(filename)
-    title = str.split(/$/)[0]
+    title = str.split(/$/)[0].gsub(/^#*\s*/, '')
     return title =~ /^\s*$/ ? escaped_basename(filename) : title
   end
 
