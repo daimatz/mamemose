@@ -13,6 +13,13 @@ require 'mamemose/path'
 
 require 'mamemose/env'
 
+if RUBY_VERSION >= '1.9'
+  Encoding.default_external = Encoding::UTF_8
+  Encoding.default_internal = Encoding::UTF_8
+else
+  $KCODE = 'UTF-8'
+end
+
 class HTMLwithSyntaxHighlighter < Redcarpet::Render::XHTML
   def block_code(code, lang)
     lang ||= 'plain'
@@ -76,12 +83,10 @@ private
     query = req.query
     path = fullpath(query["path"])
     q = URI.decode(query["q"])
-    q = q.force_encoding('utf-8') if q.respond_to?(:force_encoding)
 
     found = find(path, q)
 
     title = "Search #{q} in #{showpath(query['path'])}"
-    title = title.force_encoding('utf-8') if title.respond_to?(:force_encoding)
     body = title + "\n====\n"
     found.reject{|key, value| value == []}.sort.each do |key, value|
       body += "\n### in <a href='#{uri(key)}'>#{escape(uri(key))}</a>\n"

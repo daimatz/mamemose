@@ -16,7 +16,7 @@ version 0.4.1
       邪魔なファイルが増えるし、変換が自動化されていたとしても
       何かの拍子に Markdown ファイルと HTML ファイルの同期が取れなくなりそうな気もする。
 - 複数マシンで内容を共有できる (Dropbox 等を使ってもよい)
-- マルチプラットフォーム (少なくとも Mac, Linux は必須)
+- マルチプラットフォーム (少なくとも OSX, Linux は必須)
 - 使い慣れたエディタを使える
 - 検索できる
 - GitHub Flavored Markdown でシンタックスハイライトもしてほしい
@@ -25,11 +25,9 @@ version 0.4.1
 環境
 ----
 
-- Ruby 製
-- おもに Mac OS X 10.8 上の Ruby 1.9.3 でテスト
-- Ruby 1.8.7 でも動くようにした
-- Linux は大丈夫
-- Windows も Cygwin 上でなら動くことは確認した
+- Ruby 1.8.7, 1.9.3, 2.0.0
+- OSX, Linux
+    - Windows も Cygwin 上でなら動くことは確認した
 
 インストール方法
 ----
@@ -87,11 +85,6 @@ $ mamemose_websocket &> /dev/null &
 
 mamemose WebSocket サーバを立てなくても利用できます。
 その場合は手動で更新してください。
-
-#### 注意
-
-Ruby 1.8 では mamemose WebSocket が動かない可能性があります。
-というかもう 2.0 も出たんだしいい加減 1.8 滅べ。
 
 ### 一時ファイル閲覧
 

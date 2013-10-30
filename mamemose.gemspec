@@ -15,7 +15,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = Mamemose::VERSION
 
-  gem.add_dependency "redcarpet", ">= 2.2.0"
+  gem.add_dependency "redcarpet", "~> 2.3"
   gem.add_dependency "htmlentities", ">= 4.3.0"
   gem.add_dependency "thor", ">= 0.17.0"
   gem.add_dependency "em-websocket", ">= 0.5.0"
