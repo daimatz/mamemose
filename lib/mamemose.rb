@@ -4,6 +4,7 @@ require 'find'
 require 'uri'
 require 'redcarpet'
 require 'htmlentities'
+require 'coderay'
 
 require 'mamemose/version'
 
@@ -14,9 +15,8 @@ require 'mamemose/env'
 
 class HTMLwithSyntaxHighlighter < Redcarpet::Render::XHTML
   def block_code(code, lang)
-    code = HTMLEntities.new.encode(code)
-    lang ||= "plain"
-    return "<pre class='brush: #{lang}'>#{code}</pre>"
+    lang ||= 'plain'
+    CodeRay.scan(code, lang.to_sym).div(:line_numbers => :table)
   end
 end
 

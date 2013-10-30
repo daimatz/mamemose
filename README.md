@@ -1,7 +1,7 @@
 mamemose: Markdown memo server
 ====
 
-version 0.4.0.4
+version 0.4.1
 
 概要
 ----
@@ -112,9 +112,8 @@ $ mamemose s /path/to/file 8000
 ### シンタックスハイライト
 
 [コード部分に GitHub Flavored Markdown の記法](http://github.github.com/github-flavored-markdown/)
-を使い、シンタックスハイライトに
-[SyntaxHighlighter](http://alexgorbatchev.com/SyntaxHighlighter/)
-を使うことができます。設定例を参照。
+を使うとシンタックスハイライトされます。ハイライトエンジンは
+[CodeRay](https://github.com/rubychan/coderay) を使用。
 
 ### 数式
 
@@ -161,7 +160,7 @@ $ mamemose s /path/to/file 8000
 ```ruby
 ['_Store','.AppleDouble','.LSOverride','Icon',/^\./,/~$/,
  '.Spotlight-V100','.Trashes','Thumbs.db','ehthumbs.db',
- 'Desktop.ini','$RECYCLE.BIN',/^#/,'MathJax','syntaxhighlighter']
+ 'Desktop.ini','$RECYCLE.BIN',/^#/,'MathJax']
 ```
 
 ### 設定ファイル例
@@ -187,44 +186,6 @@ CUSTOM_HEADER = <<HEADER
 <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML">
 </script>
 HEADER
-
-# すべてのページで SyntaxHighlighter が使えるように
-host = "http://alexgorbatchev.com/pub/sh/current" # 変数も使えます
-CUSTOM_FOOTER = <<FOOTER
-<link href="#{host}/styles/shCoreDefault.css" rel="stylesheet" />
-<script src="#{host}/scripts/shCore.js"></script>
-<script src="#{host}/scripts/shAutoloader.js"></script>
-<script>
-SyntaxHighlighter.autoloader(
-'AS3 as3 #{host}/scripts/shBrushAS3.js',
-'AppleScript applescript #{host}/scripts/shBrushAppleScript.js',
-'Bash bash #{host}/scripts/shBrushBash.js',
-'CSharp csharp #{host}/scripts/shBrushCSharp.js',
-'ColdFusion coldfusion #{host}/scripts/shBrushColdFusion.js',
-'Cpp cpp #{host}/scripts/shBrushCpp.js',
-'Css css #{host}/scripts/shBrushCss.js',
-'Delphi delphi #{host}/scripts/shBrushDelphi.js',
-'Diff diff #{host}/scripts/shBrushDiff.js',
-'Erlang erlang #{host}/scripts/shBrushErlang.js',
-'Groovy groovy #{host}/scripts/shBrushGroovy.js',
-'JScript jscript #{host}/scripts/shBrushJScript.js',
-'Java java #{host}/scripts/shBrushJava.js',
-'JavaFX javafx #{host}/scripts/shBrushJavaFX.js',
-'Perl perl #{host}/scripts/shBrushPerl.js',
-'Php php #{host}/scripts/shBrushPhp.js',
-'Plain plain #{host}/scripts/shBrushPlain.js',
-'PowerShell powershell #{host}/scripts/shBrushPowerShell.js',
-'Python python #{host}/scripts/shBrushPython.js',
-'Ruby ruby #{host}/scripts/shBrushRuby.js',
-'Sass sass #{host}/scripts/shBrushSass.js',
-'Scala scala #{host}/scripts/shBrushScala.js',
-'Sql sql #{host}/scripts/shBrushSql.js',
-'Vb vb #{host}/scripts/shBrushVb.js',
-'Xml xml #{host}/scripts/shBrushXml.js'
-);
-SyntaxHighlighter.all();
-</script>
-FOOTER
 ```
 
 ### 使用例
@@ -263,8 +224,6 @@ FOOTER
 
 ![](https://raw.github.com/daimatz/mamemose/master/sample.png)
 
-MathJax と SyntaxHighlighter はローカルにダウンロードして使うのが親切だと思います。
-
 検索
 ----
 
@@ -281,9 +240,6 @@ FAQ と予想されるもの
     - 検索が遅いのはどうしようもないです。 5KB 〜 10KB くらいのメモが 3000 件くらいまでなら
       まあ使えるかなというのは確認したつもりですが
     - SSD 積んでますか？
-- 他の言語もシンタックスハイライトしたいんだけど
-    - SyntaxHighlighter の構文ファイルを自分で書いて読み込むようにしましょう
-    - Haskell 用のは書きました [gist](https://gist.github.com/3969549)
 - reStructuredText 対応して
     - Python で書いてください
 - 更新のとき自動でページ最下部に行ってほしい

@@ -19,8 +19,8 @@ body {
 pre {
     border: 1px solid #090909;
     background-color: #f8f8f8;
-    padding: 0.5em;
-    margin: 0.5em 1em;
+    padding: 0;
+    margin: 0;
 }
 code {
     border: 1px solid #cccccc;
@@ -138,6 +138,25 @@ table tr th :first-child, table tr td :first-child {
 }
 table tr th :last-child, table tr td :last-child {
     margin-bottom: 0;
+}
+table.CodeRay {
+    width: 95%;
+    border: 1px solid black;
+}
+table.CodeRay tr {
+    border: 0;
+}
+table.CodeRay td.line-numbers {
+    width: 26px;
+    border-right: 1px solid black;
+    text-align: right;
+}
+table.CodeRay td {
+    border: 0;
+    padding: 0 5px;
+}
+table.CodeRay td pre {
+    border: 0;
 }
 --></style>
 <script>

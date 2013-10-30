@@ -19,4 +19,5 @@ Gem::Specification.new do |gem|
   gem.add_dependency "htmlentities", ">= 4.3.0"
   gem.add_dependency "thor", ">= 0.17.0"
   gem.add_dependency "em-websocket", ">= 0.5.0"
+  gem.add_dependency "coderay", ">= 1.1.0"
 end
