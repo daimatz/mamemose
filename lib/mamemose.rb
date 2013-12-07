@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'rubygems'
 require 'webrick'
 require 'find'
@@ -83,6 +84,7 @@ private
     query = req.query
     path = fullpath(query["path"])
     q = URI.decode(query["q"])
+    q.force_encoding('utf-8') if q.respond_to? :force_encoding
 
     found = find(path, q)
 
