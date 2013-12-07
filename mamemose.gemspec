@@ -7,6 +7,7 @@ Gem::Specification.new do |gem|
   gem.description   = %q{Markdown memo server}
   gem.summary       = %q{Markdown memo server}
   gem.homepage      = "https://github.com/daimatz/mamemose"
+  gem.license       = 'MIT'
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
