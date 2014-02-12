@@ -106,7 +106,11 @@ $ mamemose s /path/to/file 8000
 
 [コード部分に GitHub Flavored Markdown の記法](http://github.github.com/github-flavored-markdown/)
 を使うとシンタックスハイライトされます。ハイライトエンジンは
-[CodeRay](https://github.com/rubychan/coderay) を使用。
+
+- [CodeRay](https://github.com/rubychan/coderay)
+- [SyntaxHighlighter](http://alexgorbatchev.com/SyntaxHighlighter/)
+
+から選べます。設定例を参照。
 
 ### 数式
 
@@ -130,6 +134,10 @@ $ mamemose s /path/to/file 8000
       特に利用者から見えるわけではありませんが。デフォルトは 20001
 - `MARKDOWN_PATTERN`
     - Markdown ドキュメントと見なすファイルパターンを正規表現で。デフォルトは `/\.(md|markdown)$/`
+- `SYNTAX_HIGHLIGHT`
+    - 生成する HTML が使用するシンタックスハイライトエンジン。
+        - `:coderay` CodeRay を使う。デフォルト。
+        - `:syntaxhighlighter` SyntaxHighlighter を使う。
 - `INDEX_PATTERN`
     - 一覧ページ表示時に自動的に読み込むファイルパターンを正規表現で。
       これにマッチするファイルは1つのディレクトリに複数置かないほうがいいです。
@@ -256,6 +264,5 @@ Harry   |   32
 その他
 ----
 
-ブログ的なエントリ
-
-- <http://daimatz.hateblo.jp/entry/2012/12/01/152725>
+- [ブログ的なエントリ](http://daimatz.hateblo.jp/entry/2012/12/01/152725)
+- [Haskell 用 SyntaxHighlighter](https://gist.github.com/3969549)

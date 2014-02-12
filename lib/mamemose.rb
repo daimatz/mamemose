@@ -23,8 +23,14 @@ end
 
 class HTMLwithSyntaxHighlighter < Redcarpet::Render::XHTML
   def block_code(code, lang)
+    highlight = defined?(SYNTAX_HIGHLIGHT) ? SYNTAX_HIGHLIGHT : :coderay
     lang ||= 'plain'
-    CodeRay.scan(code, lang.to_sym).div(:line_numbers => :table)
+    if highlight == :syntaxhighlighter
+      code = HTMLEntities.new.encode(code)
+      "<pre class='brush: #{lang}'>#{code}</pre>"
+    else
+      CodeRay.scan(code, lang.to_sym).div(:line_numbers => :table)
+    end
   end
 end
 
